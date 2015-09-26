@@ -12,7 +12,8 @@ import multiprocessing
 import time
 import subprocess
 import random
-from pyPdf import PdfFileReader, PdfFileWriter
+try: from pyPdf import PdfFileReader, PdfFileWriter
+except Exception: from PyPDF2 import PdfFileReader, PdfFileWriter
 import argparse
 import math
 import unique
@@ -37,8 +38,7 @@ def genelist(fname):
 		continue	
 	else:
 		gene_sym[gene[0]]=t[0]
-	       
-	
+
         #print t[0]
     return lis,gene_sym
 

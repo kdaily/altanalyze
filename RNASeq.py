@@ -4534,11 +4534,15 @@ def runKallisto(species,dataset_name,root_dir,fastq_folder,returnSampleNames=Fal
     ### Summarize alignment information
     for sample in countMatrix:
         estCounts = int(float(countMatrix[sample]))
-        totalCounts = sample_total_counts[sample]
-        aligned = str(100*estCounts/float(totalCounts))
-        aligned =  string.split(aligned,'.')[0]+'.'+string.split(aligned,'.')[1][:2]
+        try:
+            totalCounts = sample_total_counts[sample]
+            aligned = str(100*estCounts/float(totalCounts))
+            aligned =  string.split(aligned,'.')[0]+'.'+string.split(aligned,'.')[1][:2]
+        except Exception:
+            totalCounts = 'UNK'
+            aligned = 'UNK'
         countMatrix[sample] = [str(estCounts),totalCounts,aligned]
-    
+            
     dataset_name = string.replace(dataset_name,'exp.','')
     to = export.ExportFile(root_dir+'/ExpressionInput/transcript.'+dataset_name+'.txt')
     go = export.ExportFile(root_dir+'/ExpressionInput/exp.'+dataset_name+'.txt')
@@ -4685,9 +4689,8 @@ def getFASTAFile(species):
     return fasta_file
 
 if __name__ == '__main__':
-    filename = '/Volumes/SEQ-DATA/PCBC-new/July2014/counts.All.txt'
+    filename = '/Volumes/SEQ-DATA/AML-TCGA/MDS-AML-combined/counts.AML-MDS.txt'
     #fastRPKMCalculate(filename);sys.exit()
-    calculateRPKMsFromGeneCounts(filename,'Hs');sys.exit()
     #copyICGSfiles('','');sys.exit()
     #runKallisto('Hs','test','/Users/saljh8/Desktop/dataAnalysis/Grimes/AML_Kallisto_test/paired-end/','/Users/saljh8/Desktop/dataAnalysis/Grimes/AML_Kallisto_test/paired-end/');sys.exit()
     import multiprocessing as mlp
@@ -4704,6 +4707,7 @@ if __name__ == '__main__':
     
     #gsp.setSampleDiscoveryParameters(1,1,4,3, True,'Gene','protein_coding',False,'cosine','hopach',0.5)
     filename = '/Volumes/SEQ-DATA/AML_junction/AltResults/AlternativeOutput/Hs_RNASeq_top_alt_junctions-PSI-clust.txt'
+    #calculateRPKMsFromGeneCounts(filename,'Hs');sys.exit()
     #fastRPKMCalculate(filename);sys.exit()
     results_file = '/Volumes/SEQ-DATA/Grimes/14018_gmp-pro/ExpressionInput/DataPlots/400 fold for at least 4 samples/Clustering-myeloblast-steady-state-correlated-features-hierarchical_euclidean_cosine-hopach.txt'
     driverFile = '/Volumes/SEQ-DATA/Grimes/14018_gmp-pro/ExpressionInput/drivingTFs-symbol.txt'

@@ -1,21 +1,19 @@
-#!/usr/local/bin/python2.6
-
 ###AltAnalyze
 #Copyright 2005-2008 J. David Gladstone Institutes, San Francisco California
 #Author Nathan Salomonis - nsalomonis@gmail.com
 
-#Permission is hereby granted, free of charge, to any person obtaining a copy 
-#of this software and associated documentation files (the "Software"), to deal 
-#in the Software without restriction, including without limitation the rights 
-#to use, copy, modify, merge, publish, distribute, sublicense, and/or sell 
-#copies of the Software, and to permit persons to whom the Software is furnished 
+#Permission is hereby granted, free of charge, to any person obtaining a copy
+#of this software and associated documentation files (the "Software"), to deal
+#in the Software without restriction, including without limitation the rights
+#to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+#copies of the Software, and to permit persons to whom the Software is furnished
 #to do so, subject to the following conditions:
 
-#THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
-#INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
-#PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
-#HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION 
-#OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+#THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+#INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+#PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+#HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+#OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 #SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import math
@@ -58,7 +56,7 @@ try:
     except Exception: from PIL import ImageTk
 except Exception:
     None #print 'Python Imaging Library not installed... using default PNG viewer'
-    
+
 use_Tkinter = 'no'
 debug_mode = 'no'
 analysis_start_time = time.time()
@@ -116,10 +114,10 @@ def clearObjectsFromMemory(db_to_clear):
         for key in db_to_clear: db_keys[key]=[]
     except Exception:
         for key in db_to_clear: del key ### if key is a list
-        
+
     for key in db_keys:
         try: del db_to_clear[key]
-        except Exception: 
+        except Exception:
             try:
                 for i in key: del i ### For lists of tuples
             except Exception: del key ### For plain lists
@@ -179,7 +177,7 @@ def FindDir(dir,term):
         if term == i: dir_list2.append(i)
     if len(dir_list2)==0:
         for i in dir_list:
-            if term in i: dir_list2.append(i)        
+            if term in i: dir_list2.append(i)
     dir_list2.sort(); dir_list2.reverse()
     if len(dir_list2)>0:  return dir_list2[0]
     else: return ''
@@ -209,7 +207,7 @@ def openCytoscape(parent_dir,application_dir,application_name):
             os.system('java -Dswing.aatext=true -Xss5M -Xmx512M -jar '+jar_path+' '+main_path+'  -p '+plugins_path+' &')
             print 'Cytoscape jar opened:',jar_path
         except Exception:
-            print 'OS command to open Java failed.'      
+            print 'OS command to open Java failed.'
             try:
                 try: openFile(app_dir2); print 'Cytoscape opened:',app_dir2
                 except Exception:
@@ -230,7 +228,7 @@ def createCytoscapeDesktop(cytoscape_dir):
 
     cyto_ds_output = cytoscape_dir+'/Cytoscape.desktop'
     data = export.ExportFile(cyto_ds_output)
-    
+
     cytoscape_desktop = cytoscape_dir+'/Cytoscape'; #cytoscape_desktop = '/hd3/home/nsalomonis/Cytoscape_v2.6.1/Cytoscape'
     cytoscape_png = cytoscape_dir+ '/.install4j/Cytoscape.png'; #cytoscape_png = '/hd3/home/nsalomonis/Cytoscape_v2.6.1/.install4j/Cytoscape.png'
     data.write('[Desktop Entry]'+'\n')
@@ -250,7 +248,7 @@ def ProbesetCalls(array_type,probeset_class,splice_event,constitutive_call,exter
         if filter_probesets_by == 'exon':
             if '-' in exonid or '|' in exonid: ###Therfore the probeset represents an exon-exon junction or multi-exon probeset
                 include_probeset = 'no'
-        if filter_probesets_by != 'exon': 
+        if filter_probesets_by != 'exon':
             if '|' in exonid: include_probeset = 'no'
         if constitutive_call == 'yes': include_probeset = 'yes'
     else:
@@ -314,7 +312,7 @@ class SplicingAnnotationData:
     def Strand(self): return self._strand
     def ProbeStart(self): return self._start
     def ProbeStop(self): return self._stop
-    def ProbesetClass(self): 
+    def ProbesetClass(self):
         ###e.g. core, extendended, full
         return self._probest_class
     def ExternalExonIDs(self): return self._external_exonids
@@ -409,7 +407,7 @@ def importSplicingAnnotationDatabase(filename,array_type,filtered_arrayids,filte
                 if constitutive_call == 'yes': constitutive_probeset_db[probeset] = affygene
         genes_being_analyzed = constitutive_gene
     else:
-        for line in open(fn,'rU').xreadlines():             
+        for line in open(fn,'rU').xreadlines():
             probeset_data = cleanUpLine(line)  #remove endline
             if x == 0: x = 1
             else:
@@ -475,7 +473,7 @@ def importSplicingAnnotationDatabase(filename,array_type,filtered_arrayids,filte
         ###If no constitutive probesets for a gene as a result of additional filtering (removing all probesets associated with a splice event), add these back
         original_probesets_add = 0; genes_being_analyzed = {}
         for gene in constitutive_gene: genes_being_analyzed[gene]=[]
-        
+
         for gene in constitutive_original:
             if gene not in constitutive_gene:
                 genes_being_analyzed[gene] = [gene]
@@ -483,7 +481,7 @@ def importSplicingAnnotationDatabase(filename,array_type,filtered_arrayids,filte
                 original_probesets_add +=1
                 gene_transcript_cluster_db[gene] = gene_transcript_cluster_db2[gene]
                 for probeset in constitutive_original[gene]: constitutive_probeset_db[probeset] = gene
-        
+
         #if array_type == 'junction' or array_type == 'RNASeq':
         ### Added the below in 1.16!!!
         ### If no constitutive probesets for a gene assigned, assign all gene probesets
@@ -499,7 +497,7 @@ def importSplicingAnnotationDatabase(filename,array_type,filtered_arrayids,filte
                     genes_being_analyzed[gene] = [gene]
                     ### DO NOT ADD TO constitutive_gene SINCE WE WANT ALL mRNA ALIGNING EXONS/JUNCTIONS TO BE ADDED!!!!
                     #constitutive_gene[gene]=[]
-                    
+
         gene_transcript_cluster_db = eliminate_redundant_dict_values(gene_transcript_cluster_db)
 
     #if affygene == 'ENSMUSG00000023089': print [abs(fold_change_log)],[log_fold_cutoff];kill
@@ -544,12 +542,12 @@ def exportDenominatorGenes(genes_being_analyzed):
 def performExpressionAnalysis(filename,constitutive_probeset_db,exon_db,annotate_db,dataset_name):
     #if analysis_method == 'splicing-index': returnLargeGlobalVars();kill ### used to ensure all large global vars from the reciprocal junction analysis have been cleared from memory
     #returnLargeGlobalVars()
-    
+
     """import list of expression values for arrayids and calculates statistics"""
     global fold_dbase; global original_conditions; global normalization_method
     stats_dbase = {}; fold_dbase={}; ex_db={}; si_db=[]; bad_row_import = {}; count=0
     global array_group_name_db; array_group_name_db = {}
-    global array_group_db; array_group_db = {}; 
+    global array_group_db; array_group_db = {};
     global array_raw_group_values; array_raw_group_values = {}; global original_array_names; original_array_names=[]
     global max_replicates; global equal_replicates; global array_group_list
     array_index_list = []  ###Use this list for permutation analysis
@@ -615,7 +613,7 @@ def performExpressionAnalysis(filename,constitutive_probeset_db,exon_db,annotate
           except KeyError:
             #print probeset
             pass
-              
+
     print len(array_raw_group_values), 'sequence identifiers imported out of', line_num-1
     if len(bad_row_import)>0:
         print len(bad_row_import), "Rows with an unexplained import error processed and deleted."
@@ -635,7 +633,7 @@ def performExpressionAnalysis(filename,constitutive_probeset_db,exon_db,annotate
             null=array_raw_group_values[probeset]; cs_genedb[gene]=[]
             if gene == probeset: rnaseq_cs_gene_db[gene]=[] ### If RPKM normalization used, use the gene expression values already calculated
         except Exception: missing_genedb[gene]=[] ### Collect possible that are missing from constitutive database (verify next)
-        
+
     for gene in missing_genedb:
         try: null=cs_genedb[gene]
         except Exception: addback_genedb[gene]=[]
@@ -654,7 +652,7 @@ def performExpressionAnalysis(filename,constitutive_probeset_db,exon_db,annotate
     for probeset in constitutive_probeset_db:
         gene = constitutive_probeset_db[probeset]
         #if gene == 'ENSG00000185008': print [[probeset]]
-        
+
     ### Only examine values for associated exons when determining RNASeq constitutive expression (when exon data is present)
     normalization_method = 'raw'
     if array_type == 'RNASeq':
@@ -671,7 +669,7 @@ def performExpressionAnalysis(filename,constitutive_probeset_db,exon_db,annotate
             for uid in constitutive_probeset_db:
                 if '-' not in uid: constitutive_probeset_db2[uid] = constitutive_probeset_db[uid]
             constitutive_probeset_db = constitutive_probeset_db2; constitutive_probeset_db2=[]
-        
+
     """
     for probeset in constitutive_probeset_db:
         gene = constitutive_probeset_db[probeset]
@@ -694,7 +692,7 @@ def performExpressionAnalysis(filename,constitutive_probeset_db,exon_db,annotate
         if agglomerate_inclusion_probesets == 'yes':
             array_raw_group_values = agglomerateInclusionProbesets(array_raw_group_values,exon_inclusion_db)
             exon_inclusion_db=[]
-        
+
         ### For datasets with high memory requirements (RNASeq), filter the current and new databases
         ### Begin this function after agglomeration to ensure agglomerated probesets are considered
         reciprocal_probesets = {}
@@ -713,7 +711,7 @@ def performExpressionAnalysis(filename,constitutive_probeset_db,exon_db,annotate
             #print 'Removing',len(not_evalutated),'exon/junction IDs not evaulated for splicing'
             for probeset in not_evalutated:
                 del array_raw_group_values[probeset]
-                
+
     ###Check to see if we have precomputed expression data or raw to be analyzed
     x=0; y=0; array_raw_group_values2={}; probesets_to_delete=[] ### Record deleted probesets
     if len(array_raw_group_values)==0:
@@ -721,7 +719,7 @@ def performExpressionAnalysis(filename,constitutive_probeset_db,exon_db,annotate
         try: UI.WarningWindow(print_out,'Exit')
         except Exception: print print_out; print "Exiting program"
         badExit()
-                
+
     elif len(array_raw_group_values)>0:
         ###array_group_list should already be unique and correctly sorted (see above)
         for probeset in array_raw_group_values:
@@ -773,9 +771,9 @@ def performExpressionAnalysis(filename,constitutive_probeset_db,exon_db,annotate
 
     if array_type == 'RNASeq': id_name = 'exon/junction IDs'
     else: id_name = 'array IDs'
-    
+
     array_raw_group_values = array_raw_group_values2; array_raw_group_values2=[]
-    print x, id_name,"excluded prior to  analysis... predicted not detected"            
+    print x, id_name,"excluded prior to  analysis... predicted not detected"
 
     global original_avg_const_exp_db; global original_fold_dbase
     global avg_const_exp_db; global permute_lists; global midas_db
@@ -787,7 +785,7 @@ def performExpressionAnalysis(filename,constitutive_probeset_db,exon_db,annotate
         while conditions > y:
             avg_const_exp_db = constitutive_exp_normalization_raw(gene_db,constitutive_gene_db,array_raw_group_values,exon_db,y,avg_const_exp_db); y+=1
             #print len(avg_const_exp_db),constitutive_gene_db['ENSMUSG00000054850']
-        ###Export Analysis Results for external splicing analysis (e.g. MiDAS format)            
+        ###Export Analysis Results for external splicing analysis (e.g. MiDAS format)
         if run_MiDAS == 'yes' and normalization_method != 'RPKM': ### RPKM has negative values which will crash MiDAS
             status = ResultsExport_module.exportTransitResults(array_group_list,array_raw_group_values,array_group_name_db,avg_const_exp_db,adj_fold_dbase,exon_db,dataset_name,apt_location)
             print "Finished exporting input data for MiDAS analysis"
@@ -796,7 +794,7 @@ def performExpressionAnalysis(filename,constitutive_probeset_db,exon_db,annotate
         else: midas_db = {}
 
         ###Provides all pairwise permuted group comparisons
-        if array_type == 'AltMouse' or ((array_type == 'junction' or array_type == 'RNASeq') and explicit_data_type == 'null'): 
+        if array_type == 'AltMouse' or ((array_type == 'junction' or array_type == 'RNASeq') and explicit_data_type == 'null'):
             permute_lists = statistics.permute_arrays(array_index_list)
             ### Now remove probesets from the analysis that were used to evaluate gene expression
             for probeset in constitutive_probeset_db:
@@ -806,7 +804,7 @@ def performExpressionAnalysis(filename,constitutive_probeset_db,exon_db,annotate
                     except Exception: null=[]
             not_evalutated=[]; reciprocal_probesets=[]
         constitutive_probeset_db=[]
-        
+
         ### Above, all conditions were examined when more than 2 are present... change this so that only the most extreeem are analyzed further
         if len(array_group_list)>2 and analysis_method == 'splicing-index' and (array_type == 'exon' or array_type == 'gene' or explicit_data_type != 'null'): ### USED FOR MULTIPLE COMPARISONS
             print 'Calculating splicing-index values for multiple group comparisons (please be patient)...',
@@ -824,7 +822,7 @@ def performExpressionAnalysis(filename,constitutive_probeset_db,exon_db,annotate
                     if as_call == 0:
                         try: del nonlog_NI_db[probeset]
                         except KeyError: null=[]
-                
+
             if export_NI_values == 'yes':
                 export_exon_regions = 'yes'
                 ### Currently, we don't deal with raw adjusted expression values, just group, so just export the values for each group
@@ -839,12 +837,12 @@ def performExpressionAnalysis(filename,constitutive_probeset_db,exon_db,annotate
             for probeset in nonlog_NI_db:
                 if interaction == increment: increment+=original_increment; print '*',
                 interaction +=1
-                
+
                 geneid = exon_db[probeset].GeneID(); ed = exon_db[probeset]
                 index=0; NI_list=[] ### Add the group_name to each adj fold value
                 for NI in nonlog_NI_db[probeset]:
                     NI_list.append((NI,index)); index+=1 ### setup to sort for the extreeme adj folds and get associated group_name using the index
-                    
+
                 raw_exp_vals = array_raw_group_values[probeset]
                 adj_exp_lists={} ### Store the adjusted expression values for each group
                 if geneid in avg_const_exp_db:
@@ -874,15 +872,15 @@ def performExpressionAnalysis(filename,constitutive_probeset_db,exon_db,annotate
                                         else: adjoutput.write(ev)
                             except Exception:
                                 ev = string.join([geneid+'\t'+'NA'+'\t'+probeset]+adj_exp_vals,'\t')+'\n'; adjoutput.write(ev)
-    
+
                 NI_list.sort()
                 examine_pairwise_comparisons = 'yes'
-                
+
                 if examine_pairwise_comparisons == 'yes':
                     k1=0; k2=0; filtered_NI_comps = []
                     NI_list_rev = list(NI_list); NI_list_rev.reverse()
                     NI1,index1 = NI_list[k1]; NI2,index2 = NI_list_rev[k2]; abs_SI = abs(math.log(NI1/NI2,2))
-                    
+
                     if abs_SI<alt_exon_logfold_cutoff:
                         ### Indicates that no valid matches were identified - hence, exit loop and return an NI_list with no variance
                         NI_list = [NI_list[0],NI_list[0]]
@@ -913,7 +911,7 @@ def performExpressionAnalysis(filename,constitutive_probeset_db,exon_db,annotate
                                             #if k1 == 49 or k1 == 50 or k1 == 51: print probeset, abs_SI, k1, k2, abs(ge_fold),log_fold_cutoff, index1, index2, NI1, NI2, constit_exp1,constit_exp2
                                     k2+=1
                                 k1+=1
-                    
+
                     if len(filtered_NI_comps)>0:
                         #print filtered_NI_comps
                         #print NI_list_rev
@@ -930,7 +928,7 @@ def performExpressionAnalysis(filename,constitutive_probeset_db,exon_db,annotate
                         ge_fold = constit_exp2-constit_exp1
                         print probeset, si, ge_fold, NI_list"""
                         #print k1,k2;sys.exit()
-  
+
                 index1 = NI_list[0][1]; index2 = NI_list[-1][1]
                 nonlog_NI_db[probeset] = [NI_list[0][0],NI_list[-1][0]] ### Update the values of this dictionary
                 data_list1 = array_raw_group_values[probeset][index1]; data_list2 = array_raw_group_values[probeset][index2]
@@ -940,7 +938,7 @@ def performExpressionAnalysis(filename,constitutive_probeset_db,exon_db,annotate
                     #t,df,tails = statistics.ttest(data_list1,data_list2,2,3) #unpaired student ttest, calls p_value function
                     #t = abs(t); df = round(df); ttest_exp_p = statistics.t_probability(t,df)
                     ttest_exp_p = statistics.runComparisonStatistic(data_list1,data_list2,probability_statistic)
-                except Exception: ttest_exp_p = 1                                
+                except Exception: ttest_exp_p = 1
                 fold_dbase[probeset] = [0]; fold_dbase[probeset].append(log_fold)
                 if ttest_exp_p == -1: del fold_dbase[probeset]; probesets_to_delete.append(probeset); x += 1
                 elif avg1 < expression_threshold and avg2 < expression_threshold and (ttest_exp_p > p_threshold and ttest_exp_p != 1): ### Inserted a filtering option to exclude small variance, low expreession probesets
@@ -958,22 +956,22 @@ def performExpressionAnalysis(filename,constitutive_probeset_db,exon_db,annotate
                     for g_index in adj_exp_lists: all_nI.append(adj_exp_lists[g_index])
                     try: normIntensityP = statistics.OneWayANOVA(all_nI) #[normIntList1,normIntList2] ### This stays an ANOVA independent of the algorithm choosen since groups number > 2
                     except Exception: normIntensityP = 'NA'
-                    
+
                     if (normInt1*normInt2)<0: opposite_SI_log_mean = 'yes'
                     else: opposite_SI_log_mean = 'no'
-          
+
                     abs_log_ratio = abs(ge_fold)
                     if probeset in midas_db:
                         try: midas_p = float(midas_db[probeset])
                         except ValueError: midas_p = 'NA'
                     else: midas_p = 'NA'
-                    
-                    #if 'ENSG00000059588' in geneid: print probeset, splicing_index, constit_exp1, constit_exp2, ge_fold,group_name2+'_vs_'+group_name1, index1, index2  
+
+                    #if 'ENSG00000059588' in geneid: print probeset, splicing_index, constit_exp1, constit_exp2, ge_fold,group_name2+'_vs_'+group_name1, index1, index2
                     if abs_splicing_index>alt_exon_logfold_cutoff and (midas_p < p_threshold or midas_p == 'NA'): #and abs_log_ratio>1 and ttest_exp_p<0.05: ###and ge_threshold_count==2
                         exonid = ed.ExonID(); critical_exon_list = [1,[exonid]]
                         ped = ProbesetExpressionData(avg1, avg2, log_fold, adj_fold, ttest_exp_p, group_name2+'_vs_'+group_name1)
                         sid = ExonData(splicing_index,probeset,critical_exon_list,geneid,normInt1,normInt2,normIntensityP,opposite_SI_log_mean)
-                        sid.setConstitutiveExpression(constit_exp1); sid.setConstitutiveFold(ge_fold); sid.setProbesetExpressionData(ped) 
+                        sid.setConstitutiveExpression(constit_exp1); sid.setConstitutiveFold(ge_fold); sid.setProbesetExpressionData(ped)
                         si_db.append((splicing_index,sid))
                     else:
                         ### Also record the data for probesets that are excluded... Used by DomainGraph
@@ -994,7 +992,7 @@ def performExpressionAnalysis(filename,constitutive_probeset_db,exon_db,annotate
             excluded_probeset_db={}
             group_sizes = []; original_array_indices = permute_lists[0] ###p[0] is the original organization of the group samples prior to permutation
             for group in original_array_indices: group_sizes.append(len(group))
-            
+
             if analysis_method == 'linearregres': ### For linear regression, these scores are non-long
                 original_array_raw_group_values = copy.deepcopy(array_raw_group_values)
                 for probeset in array_raw_group_values:
@@ -1007,7 +1005,7 @@ def performExpressionAnalysis(filename,constitutive_probeset_db,exon_db,annotate
                     if pos1 == 0:  pos2 = group; positions.append((pos1,pos2))
                     else: pos2 = pos1+group; positions.append((pos1,pos2))
                     pos1 = pos2
-                    
+
             if export_NI_values == 'yes':
                 export_exon_regions = 'yes'
                 ### Currently, we don't deal with raw adjusted expression values, just group, so just export the values for each group
@@ -1015,14 +1013,14 @@ def performExpressionAnalysis(filename,constitutive_probeset_db,exon_db,annotate
                 print "Exporting all normalized intensities to:\n"+summary_output
                 adjoutput = export.ExportFile(summary_output)
                 title = string.join(['gene\tprobesets\tExonRegion']+original_array_names,'\t')+'\n'; adjoutput.write(title)
-                    
+
             events_examined= 0; denominator_events=0; fold_dbase=[]; adj_fold_dbase=[]; scores_examined=0
             splice_event_list=[]; splice_event_list_mx=[]; splice_event_list_non_mx=[]; event_mx_temp = []; permute_p_values={}; probeset_comp_db={}#use this to exclude duplicate mx events
             for geneid in alt_junction_db:
                 affygene = geneid
                 for event in alt_junction_db[geneid]:
                     if array_type == 'AltMouse':
-                        #event = [('ei', 'E16-E17'), ('ex', 'E16-E18')] 
+                        #event = [('ei', 'E16-E17'), ('ex', 'E16-E18')]
                         #critical_exon_db[affygene,tuple(critical_exons)] = [1,'E'+str(e1a),'E'+str(e2b)] --- affygene,tuple(event) == key, 1 indicates both are either up or down together
                         event_call = event[0][0] + '-' + event[1][0]
                         exon_set1 = event[0][1]; exon_set2 = event[1][1]
@@ -1049,14 +1047,14 @@ def performExpressionAnalysis(filename,constitutive_probeset_db,exon_db,annotate
                             index1=0; NI_list1=[]; NI_list2=[] ### Add the group_name to each adj fold value
                             for NI in nonlog_NI_db[probeset1]: NI_list1.append(NI)
                             for NI in nonlog_NI_db[probeset2]: NI_list2.append(NI)
-                            for NI1_g1 in NI_list1: 
+                            for NI1_g1 in NI_list1:
                                 NI2_g1 = NI_list2[index1]; index2=0
                                 for NI1_g2 in NI_list1:
                                     try: NI2_g2 = NI_list2[index2]
                                     except Exception: print index1, index2, NI_list1, NI_list2;kill
                                     if index1 != index2:
                                         b1 = NI1_g1; e1 = NI1_g2
-                                        b2 = NI2_g1; e2 = NI2_g2  
+                                        b2 = NI2_g1; e2 = NI2_g2
                                         try:
                                             dI = statistics.aspire_stringent(b1,e1,b2,e2); Rin = b1/e1; Rex = b2/e2
                                             if (Rin>1 and Rex<1) or (Rin<1 and Rex>1):
@@ -1071,7 +1069,7 @@ def performExpressionAnalysis(filename,constitutive_probeset_db,exon_db,annotate
                                     index2+=1
                                 index1+=1
                             dI_scores.sort()
-                        if analysis_method == 'linearregres':        
+                        if analysis_method == 'linearregres':
                             log_fold,i1,i2 = getAllPossibleLinearRegressionScores(probeset1,probeset2,positions,group_sizes)
                             dI_scores.append((log_fold,i1,i2))
                             raw_exp_vals1 = original_array_raw_group_values[probeset1]; raw_exp_vals2 = original_array_raw_group_values[probeset2]
@@ -1111,20 +1109,20 @@ def performExpressionAnalysis(filename,constitutive_probeset_db,exon_db,annotate
                                         else: adjoutput.write(ev)
                             try: anovaNIp = statistics.OneWayANOVA(anova_test) ### This stays an ANOVA independent of the algorithm choosen since groups number > 2
                             except Exception: anovaNIp='NA'
-                            
+
                         if len(dI_scores)>0 and geneid in avg_const_exp_db:
                           dI,index1,index2 = dI_scores[-1]; count=0
                           probesets = [probeset1, probeset2]; index=0
-     
+
                           key,jd = formatJunctionData([probeset1,probeset2],affygene,critical_exon_list[1])
                           if array_type == 'junction' or array_type == 'RNASeq':
                               try: jd.setSymbol(annotate_db[affygene].Symbol())
                               except Exception:null=[]
                           probeset_comp_db[key] = jd ### This is used for the permutation analysis and domain/mirBS import
-                            
+
                           if max_replicates >2 or equal_replicates==2: permute_p_values[(probeset1,probeset2)] = [anovaNIp, 'NA', 'NA', 'NA']
                           index=0
-                          for probeset in probesets:  
+                          for probeset in probesets:
                             if analysis_method == 'linearregres':
                                 data_list1 = original_array_raw_group_values[probeset][index1]; data_list2 = original_array_raw_group_values[probeset][index2]
                             else: data_list1 = array_raw_group_values[probeset][index1]; data_list2 = array_raw_group_values[probeset][index2]
@@ -1143,7 +1141,7 @@ def performExpressionAnalysis(filename,constitutive_probeset_db,exon_db,annotate
                             else:
                                 adj_fold = statistics.avg(adj_exp_lists2[index2]) - statistics.avg(adj_exp_lists2[index1])
                                 ped2 = ProbesetExpressionData(baseline_exp, experimental_exp, fold_change, adj_fold, ttest_exp_p, group_name2+'_vs_'+group_name1)
-                                                            
+
                             constit_exp1 = original_avg_const_exp_db[geneid][index1]
                             constit_exp2 = original_avg_const_exp_db[geneid][index2]
                             ge_fold = constit_exp2-constit_exp1
@@ -1160,7 +1158,7 @@ def performExpressionAnalysis(filename,constitutive_probeset_db,exon_db,annotate
                               """try: baseline_scores, exp_scores, pairwiseNIp = calculateAllASPIREScores(p1,p2)
                               except Exception: baseline_scores = [0]; exp_scores=[dI]; pairwiseNIp = 0 """
                           #if pairwiseNIp == 'NA': pairwiseNIp = 0 ### probably comment out
-                              
+
                         if len(dI_scores)>0:
                             scores_examined+=1
                             if probeset in midas_db:
@@ -1175,7 +1173,7 @@ def performExpressionAnalysis(filename,constitutive_probeset_db,exon_db,annotate
                                     ejd.setNovelEvent(novel_event)
                                 splice_event_list.append((dI,ejd))
                             else: excluded_probeset_db[affygene+':'+critical_exon_list[1][0]] = probeset1, affygene, dI, 'NA', anovaNIp
-                            
+
             statistics.adjustPermuteStats(permute_p_values)
             ex_db = splice_event_list, probeset_comp_db, permute_p_values, excluded_probeset_db
             original_fold_dbase = fold_dbase; original_avg_const_exp_db=[]; nonlog_NI_db = []; fold_dbase=[]
@@ -1207,7 +1205,7 @@ class ProbesetExpressionData:
     def ExpPval(self): return str(self.ttest_raw_exp)
     def Annotation(self): return self.annotation
     def __repr__(self): return self.BaselineExp()+'|'+FoldChange()
-    
+
 def agglomerateInclusionProbesets(array_raw_group_values,exon_inclusion_db):
     ###Combine expression profiles for inclusion probesets that correspond to the same splice event
     for excl_probeset in exon_inclusion_db:
@@ -1257,7 +1255,7 @@ def constitutive_exp_normalization(fold_db,stats_dbase,exon_db,constitutive_prob
     for probeset in fold_db: conditions = len(fold_db[probeset]); break
     remove_diff_exp_genes = remove_transcriptional_regulated_genes
     if conditions > 2: remove_diff_exp_genes = 'no'
-    
+
     for probeset in exon_db:
       affygene = exon_db[probeset].GeneID() #exon_db[probeset] = affygene,exons,ensembl,block_exon_ids,block_structure,comparison_info
       if probeset in fold_db:
@@ -1291,7 +1289,7 @@ def constitutive_exp_normalization(fold_db,stats_dbase,exon_db,constitutive_prob
             try: avg_const_exp_db[affygene].append(avg_const_exp)
             except KeyError: avg_const_exp_db[affygene] = [avg_const_exp]
             x += 1
-    
+
     adj_fold_dbase={}; nonlog_NI_db={}; constitutive_fold_change={}
     for affygene in avg_const_exp_db:   ###If we only wish to include propper constitutive probes, this will ensure we only examine those genes and probesets that are constitutive
         probeset_list = gene_db[affygene]
@@ -1304,7 +1302,7 @@ def constitutive_exp_normalization(fold_db,stats_dbase,exon_db,constitutive_prob
                 probe_fold_val = fold_db[probeset][x]
                 baseline_exp = stats_dbase[probeset][0]
                 exp_val = probe_fold_val + baseline_exp
-    
+
                 exp_val_non_log = statistics.log_fold_conversion_fraction(exp_val)
                 expr_to_subtract_non_log = statistics.log_fold_conversion_fraction(expr_to_subtract)
                 baseline_const_exp_non_log = statistics.log_fold_conversion_fraction(baseline_const_exp)
@@ -1312,12 +1310,12 @@ def constitutive_exp_normalization(fold_db,stats_dbase,exon_db,constitutive_prob
                     exp_splice_valff = exp_val_non_log/expr_to_subtract_non_log
                 else: #if no, then we just normalize to the baseline constitutive expression in order to keep gene expression effects (useful if you don't trust constitutive feature expression levels)
                     exp_splice_valff = exp_val_non_log/baseline_const_exp_non_log
-                
+
                 constitutive_fold_diff = expr_to_subtract_non_log/baseline_const_exp_non_log
                 ###To calculate adjusted expression, we need to get the fold change in the constitutive avg (expr_to_subtract/baseline_const_exp) and divide the experimental expression
                 ###By this fold change.
                 ge_adj_exp_non_log = exp_val_non_log/constitutive_fold_diff #gives a GE adjusted expression
-                
+
                 try: ge_adj_exp = math.log(ge_adj_exp_non_log,2)
                 except ValueError: print probeset,ge_adj_exp_non_log,constitutive_fold_diff,exp_val_non_log,exp_val,baseline_exp, probe_fold_val, dog
                 adj_probe_fold_val = ge_adj_exp - baseline_exp
@@ -1334,7 +1332,7 @@ def constitutive_exp_normalization(fold_db,stats_dbase,exon_db,constitutive_prob
                             adj_probe_fold_val = 0
                         adj_fold_dbase[probeset] = [adj_probe_fold_val]
 
-                try: nonlog_NI_db[probeset].append(exp_splice_valff) ###ratio of junction exp relative to gene expression at that time-point              
+                try: nonlog_NI_db[probeset].append(exp_splice_valff) ###ratio of junction exp relative to gene expression at that time-point
                 except KeyError: nonlog_NI_db[probeset] = [exp_splice_valff]
                 n = 0
                 #if expr_to_subtract_non_log != baseline_const_exp_non_log: ###otherwise this is the first value in the expression array
@@ -1363,7 +1361,7 @@ def constitutive_exp_normalization(fold_db,stats_dbase,exon_db,constitutive_prob
         adj_fold_dbase = fold_db #don't change expression values
     print len(constitutive_fold_change), "genes undergoing analysis for alternative splicing/transcription"
     summary_data_db['denominator_exp_genes']=len(constitutive_fold_change)
-    """    
+    """
     mir_gene_count = 0
     for gene in constitutive_fold_change:
         if gene in gene_microRNA_denom: mir_gene_count+=1
@@ -1380,7 +1378,7 @@ class TranscriptionData:
     def ConstitutiveFoldStr(self): return str(self._constitutive_fold)
     def RNAProcessing(self): return self._rna_processing_annotation
     def __repr__(self): return self.ConstitutiveFoldStr()+'|'+RNAProcessing()
-        
+
 def constitutive_expression_changes(constitutive_fold_change,annotate_db):
     ###Add in constitutive fold change filter to assess gene expression for ASPIRE
     gene_expression_diff_db = {}
@@ -1397,14 +1395,14 @@ def constitutive_exp_normalization_raw(gene_db,constitutive_gene_db,array_raw_gr
     """normalize expression for raw expression data (only for non-baseline data)"""
     #avg_true_const_exp_db[affygene] = [avg_const_exp]
     temp_avg_const_exp_db={}
-    
+
     for probeset in array_raw_group_values:
         conditions = len(array_raw_group_values[probeset][y]); break #number of raw expresson values to normalize
 
     for affygene in gene_db:
         ###This is blank when there are no constitutive or the above condition is implemented
         if affygene in constitutive_gene_db:
-            probeset_list = constitutive_gene_db[affygene]  
+            probeset_list = constitutive_gene_db[affygene]
             z = 1
         else:  ###so we can analyze splicing independent of gene expression even if no 'gene' feature is present
             probeset_list = gene_db[affygene]
@@ -1417,9 +1415,9 @@ def constitutive_exp_normalization_raw(gene_db,constitutive_gene_db,array_raw_gr
                 try: exp_val = array_raw_group_values[probeset][y][x] ### try statement is used for constitutive probes that were deleted due to filtering in performExpressionAnalysis
                 except KeyError: continue
                 exp_list.append(exp_val)
-            try: avg_const_exp = statistics.avg(exp_list) 
+            try: avg_const_exp = statistics.avg(exp_list)
             except Exception: avg_const_exp = 'null'
-            if only_include_constitutive_containing_genes == 'yes' and avg_const_exp != 'null': 
+            if only_include_constitutive_containing_genes == 'yes' and avg_const_exp != 'null':
                 if z == 1:
                     try: avg_const_exp_db[affygene].append(avg_const_exp)
                     except KeyError: avg_const_exp_db[affygene] = [avg_const_exp]
@@ -1430,8 +1428,8 @@ def constitutive_exp_normalization_raw(gene_db,constitutive_gene_db,array_raw_gr
                 except KeyError: avg_const_exp_db[affygene] = [avg_const_exp]
                 try: temp_avg_const_exp_db[affygene].append(avg_const_exp)
                 except KeyError: temp_avg_const_exp_db[affygene] = [avg_const_exp]
-            x += 1        
-        
+            x += 1
+
     if analysis_method == 'ANOVA':
         global normalized_raw_exp_ratios; normalized_raw_exp_ratios = {}
         for affygene in gene_db:
@@ -1479,7 +1477,7 @@ class ZScoreData:
 class FDRStats(ZScoreData):
     def __init__(self,p): self._permute_p = p
     def AdjP(self): return str(self._adj_p)
-        
+
 def countGenesForElement(permute_input_list,probeset_to_gene,probeset_element_db):
     element_gene_db={}
     for probeset in permute_input_list:
@@ -1523,12 +1521,12 @@ def calculateZScores(hit_count_db,denom_count_db,total_gene_denom_count,total_ge
             gene_symbols = formatGeneSymbolHits(hit_count_db[element])
             r = float(element_hit_gene_count) ###regulated genes associated with element
         else: r = 0; gene_symbols = ''
-        
+
         try: z = zscore(r,n,N,R)
         except Exception: z = 0; #print 'error:',element,r,n,N,R; kill
         try: null_z = zscore(0,n,N,R)
         except Exception: null_z = 0; #print 'error:',element,r,n,N,R; kill
-        
+
         zsd = ZScoreData(element,r,n,z,null_z,gene_symbols)
         if element_type == 'domain': original_domain_z_score_data[element] = zsd
         elif element_type == 'microRNA': original_microRNA_z_score_data[element] = zsd
@@ -1542,7 +1540,7 @@ def calculateZScores(hit_count_db,denom_count_db,total_gene_denom_count,total_ge
 ######### Begin Permutation Analysis #######
 def calculatePermuteZScores(permute_element_inputs,element_denominator_gene_count,N,R):
     ###Make this code as efficient as possible
-    for element_input_gene_count in permute_element_inputs:  
+    for element_input_gene_count in permute_element_inputs:
         for element in element_input_gene_count:
             r = element_input_gene_count[element]
             n = element_denominator_gene_count[element]
@@ -1551,7 +1549,7 @@ def calculatePermuteZScores(permute_element_inputs,element_denominator_gene_coun
             permuted_z_scores[element].append(abs(z))
             #if element == '0005488':
             #a.append(r)
-                
+
 def calculatePermuteStats(original_element_z_score_data):
     for element in original_element_z_score_data:
         zsd = original_element_z_score_data[element]
@@ -1570,14 +1568,14 @@ def calculatePermuteStats(original_element_z_score_data):
 def FishersExactTest(r,n,R,N):
     a = r; b = n-r; c=R-r; d=N-R-b
     table = [[int(a),int(b)], [int(c),int(d)]]
-    
+
     try: ### Scipy version - cuts down rutime by ~1/3rd the time
         oddsratio, pvalue = stats.fisher_exact(table)
         return pvalue
     except Exception:
         ft = fishers_exact_test.FishersExactTest(table)
         return ft.two_tail_p()
-        
+
 def adjustPermuteStats(original_element_z_score_data):
     #1. Sort ascending the original input p value vector.  Call this spval.  Keep the original indecies so you can sort back.
     #2. Define a new vector called tmp.  tmp= spval.  tmp will contain the BH p values.
@@ -1588,23 +1586,23 @@ def adjustPermuteStats(original_element_z_score_data):
     #7  tmp[ i ]=min(tmp[i+1], min((m/i)*spval[ i ],1))
     #8  repeat step 7 for m-3, m-4,... until i=1
     #9. sort tmp back to the original order of the input p values.
-    
+
     spval=[]
     for element in original_element_z_score_data:
         zsd = original_element_z_score_data[element]
         p = float(zsd.PermuteP())
         spval.append([p,element])
-        
+
     spval.sort(); tmp = spval; m = len(spval); i=m-2; x=0 ###Step 1-4
-    
+
     while i > -1:
         tmp[i]=min(tmp[i+1][0], min((float(m)/(i+1))*spval[i][0],1)),tmp[i][1]; i -= 1
-        
+
     for (adjp,element) in tmp:
         zsd = original_element_z_score_data[element]
         zsd.SetAdjP(adjp)
     spval=[]
-    
+
 def permute_p(null_list,true_value):
     y = 0; z = 0; x = permutations
     for value in null_list:
@@ -1740,7 +1738,7 @@ def determineExternalType(external_probeset_db):
             else: pval = 1
             external_probeset_db2[id] = score,pval
     return external_probeset_db2, type
-                
+
 def importExternalProbesetData(dataset_dir):
     excluded_probeset_db={}; splice_event_list=[]; p_value_call={}; permute_p_values={}; gene_expression_diff_db={}
     analyzed_probeset_db = {}
@@ -1763,7 +1761,7 @@ def importExternalProbesetData(dataset_dir):
             if as_call == 0:
                 try: del analyzed_probeset_db[probeset]
                 except KeyError: null=[]
-                
+
     for probeset in analyzed_probeset_db:
         ed = exon_db[probeset]; geneid = ed.GeneID()
         td = TranscriptionData('',''); gene_expression_diff_db[geneid] = td
@@ -1776,7 +1774,7 @@ def importExternalProbesetData(dataset_dir):
         else:
             ### Also record the data for probesets that are excluded... Used by DomainGraph
             eed = ExcludedExonData(0,geneid,'NA')
-            excluded_probeset_db[probeset] = eed        
+            excluded_probeset_db[probeset] = eed
     print len(splice_event_list), 'pre-filtered external results imported...\n'
     return splice_event_list, p_value_call, permute_p_values, excluded_probeset_db, gene_expression_diff_db
 
@@ -1790,7 +1788,7 @@ def splicingAnalysisAlgorithms(nonlog_NI_db,fold_dbase,dataset_name,gene_express
         if original_conditions > 2:
             splice_event_list, probeset_comp_db, permute_p_values, excluded_probeset_db = ex_db
             splice_event_list, p_value_call, permute_p_values, exon_db, regulated_exon_junction_db = furtherProcessJunctionScores(splice_event_list, probeset_comp_db, permute_p_values)
-        else: 
+        else:
             splice_event_list, probeset_comp_db, permute_p_values, excluded_probeset_db = analyzeJunctionSplicing(nonlog_NI_db)
             splice_event_list, p_value_call, permute_p_values, exon_db, regulated_exon_junction_db = furtherProcessJunctionScores(splice_event_list, probeset_comp_db, permute_p_values)
     elif analysis_method == 'splicing-index':
@@ -1803,7 +1801,7 @@ def splicingAnalysisAlgorithms(nonlog_NI_db,fold_dbase,dataset_name,gene_express
     elif analysis_method == 'FIRMA':
         regulated_exon_junction_db = {}
         splice_event_list, p_value_call, permute_p_values, excluded_probeset_db = FIRMAanalysis(fold_dbase)
-                
+
     global permuted_z_scores; permuted_z_scores={}; global original_domain_z_score_data; original_domain_z_score_data={}
     global original_microRNA_z_score_data; original_microRNA_z_score_data={}
     nonlog_NI_db=[] ### Clear memory of this large dictionary
@@ -1830,7 +1828,7 @@ def splicingAnalysisAlgorithms(nonlog_NI_db,fold_dbase,dataset_name,gene_express
         exon_gene_array_translation_file = 'AltDatabase/'+species+'/'+array_type+'/'+species+'_'+array_type+'-exon_probesets.txt'
         try: exon_array_translation_db = importGeneric(exon_gene_array_translation_file)
         except Exception: exon_array_translation_db={} ### Not present for all species
-        
+
     exon_hits={}; clearObjectsFromMemory(probeset_comp_db); probeset_comp_db=[]
     ###Run analyses in the ExonAnalyze_module module to assess functional changes
     for (score,ed) in splice_event_list:
@@ -1844,8 +1842,8 @@ def splicingAnalysisAlgorithms(nonlog_NI_db,fold_dbase,dataset_name,gene_express
 
     dataset_name_original = analysis_method+'-'+dataset_name[8:-1]
     global functional_attribute_db; global protein_features
-    
-    ### Possibly Block-out code for DomainGraph export             
+
+    ### Possibly Block-out code for DomainGraph export
     ###########  Re-import the exon_db for significant entries with full annotaitons
     exon_db={}; filtered_arrayids={}; filter_status='yes' ###Use this as a means to save memory (import multiple times - only storing different types relevant information)
     for (score,entry) in splice_event_list:
@@ -1854,7 +1852,7 @@ def splicingAnalysisAlgorithms(nonlog_NI_db,fold_dbase,dataset_name,gene_express
         pl = string.split(probeset,'|'); probeset = pl[0]; filtered_arrayids[probeset] = [] ### When agglomerated, this is important
         if array_type == 'AltMouse' or ((array_type == 'junction' or array_type == 'RNASeq') and explicit_data_type == 'null'):
             try: probeset = entry.Probeset2(); filtered_arrayids[probeset] = []
-            except AttributeError: null =[] ###occurs when running Splicing 
+            except AttributeError: null =[] ###occurs when running Splicing
     exon_db = importSplicingAnnotationDatabase(probeset_annotations_file,array_type,filtered_arrayids,filter_status);null=[] ###replace existing exon_db (probeset_annotations_file should be a global)
 
     ###domain_gene_changed_count_db is the number of genes for each domain that are found for regulated probesets
@@ -1893,16 +1891,16 @@ def splicingAnalysisAlgorithms(nonlog_NI_db,fold_dbase,dataset_name,gene_express
             if perform_element_permutation_analysis == 'yes':
                 try: probeset_mirBS_db[uid].append(microRNA)
                 except KeyError: probeset_mirBS_db[uid] = [microRNA]
-                
+
         miR_str = string.join(miR_list,','); miR_str = '('+miR_str+')'
         function_type = ('microRNA-target'+miR_str,'~')
         try: functional_attribute_db[(affygene,uid)].append(function_type)
         except KeyError: functional_attribute_db[(affygene,uid)]=[function_type]
         all_microRNA_gene_hits[affygene] = []
-            
-    ###Replace the gene list for each microRNA hit with count data            
+
+    ###Replace the gene list for each microRNA hit with count data
     microRNA_hit_gene_count_db = eliminate_redundant_dict_values(microRNA_hit_gene_count_db)
-            
+
     ###Combines any additional feature alignment info identified from 'ExonAnalyze_module.characterizeProteinLevelExonChanges' (e.g. from Ensembl or junction-based queries rather than exon specific) and combines
     ###this with this database of (Gene,Exon)=[(functional element 1,'~'),(functional element 2,'~')] for downstream result file annotatations
     domain_hit_gene_count_db = {}; all_domain_gene_hits = {}; probeset_domain_db={}
@@ -1933,21 +1931,21 @@ def splicingAnalysisAlgorithms(nonlog_NI_db,fold_dbase,dataset_name,gene_express
     domain_gene_counts = {} ### Get unique gene counts for each domain
     for domain in domain_associated_genes:
         domain_gene_counts[domain] = len(domain_associated_genes[domain])
-                
+
     total_microRNA_gene_hit_count = len(all_microRNA_gene_hits)
     total_microRNA_gene_denom_count = len(gene_microRNA_denom)
     Nm,Rm = calculateZScores(microRNA_hit_gene_count_db,microRNA_count_db,total_microRNA_gene_denom_count,total_microRNA_gene_hit_count,'microRNA')
 
     gene_microRNA_denom =[]
-    
+
     summary_data_db['miRNA_gene_denom'] = total_microRNA_gene_denom_count
     summary_data_db['miRNA_gene_hits'] = total_microRNA_gene_hit_count
     summary_data_db['alt_events']=len(splice_event_list)
-    
+
     total_domain_gene_hit_count = len(all_domain_gene_hits)
     total_domain_gene_denom_count = protein_ft_db_len ###genes connected to domain annotations
     Nd,Rd = calculateZScores(domain_hit_gene_count_db,domain_gene_counts,total_domain_gene_denom_count,total_domain_gene_hit_count,'domain')
-        
+
     microRNA_hit_gene_counts={}; gene_to_miR_db={} ### Get unique gene counts for each miR and the converse
     for microRNA in microRNA_hit_gene_count_db:
         microRNA_hit_gene_counts[microRNA] = len(microRNA_hit_gene_count_db[microRNA])
@@ -1985,14 +1983,14 @@ def splicingAnalysisAlgorithms(nonlog_NI_db,fold_dbase,dataset_name,gene_express
     except Exception: null=[]
     microRNA_hit_gene_count_db={}; microRNA_hit_gene_counts={};
     clearObjectsFromMemory(permuted_z_scores); permuted_z_scores=[]; original_domain_z_score_data=[]
-    
+
     if (array_type == 'AltMouse' or ((array_type == 'junction' or array_type == 'RNASeq') and explicit_data_type == 'null')) and analysis_method != 'splicing-index':
         critical_probeset_annotation_db = getJunctionSplicingAnnotations(regulated_exon_junction_db)
         probeset_aligning_db = importProbesetAligningDomains(regulated_exon_junction_db,'perfect_match')
-        
+
     else: probeset_aligning_db = importProbesetAligningDomains(exon_db,'perfect_match')
-    
-    ############   Export exon/junction level results ############    
+
+    ############   Export exon/junction level results ############
     splice_event_db={}; protein_length_list=[]; aspire_gene_results={}
     critical_gene_exons={}; unique_exon_event_db={}; comparison_count={}; direct_domain_gene_alignments={}
     functional_attribute_db2={}; protein_exon_feature_db2={}; microRNA_exon_feature_db2={}
@@ -2002,16 +2000,16 @@ def splicingAnalysisAlgorithms(nonlog_NI_db,fold_dbase,dataset_name,gene_express
     goelite_output = root_dir+'GO-Elite/AltExon/AS.'+ dataset_name + analysis_method+'.txt'
     goelite_data = export.ExportFile(goelite_output); gcn=0
 
-    #print 'LENGTH OF THE GENE ANNOTATION DATABASE',len(annotate_db)    
+    #print 'LENGTH OF THE GENE ANNOTATION DATABASE',len(annotate_db)
     if array_type != 'AltMouse':
         DG_output = root_dir+'AltResults/DomainGraph/' + dataset_name + analysis_method+'-DomainGraph.txt'
         DG_data = export.ExportFile(DG_output)
-        
+
         ### Write out only the inclusion hits to a subdir
         SRFinder_inclusion = root_dir+'GO-Elite/exon/' + dataset_name + analysis_method+'-inclusion.txt'
         SRFinder_in_data = export.ExportFile(SRFinder_inclusion)
         SRFinder_in_data.write('probeset\tSystemCode\tdeltaI\tp-value\n')
-    
+
         ### Write out only the exclusion hits to a subdir
         SRFinder_exclusion = root_dir+'GO-Elite/exon/' + dataset_name + analysis_method+'-exclusion.txt'
         SRFinder_ex_data = export.ExportFile(SRFinder_exclusion)
@@ -2021,7 +2019,7 @@ def splicingAnalysisAlgorithms(nonlog_NI_db,fold_dbase,dataset_name,gene_express
         SRFinder_denom = root_dir+'GO-Elite/exon_denominator/' + species+'-'+array_type+'.txt'
         SRFinder_denom_data = export.ExportFile(SRFinder_denom)
         SRFinder_denom_data.write('probeset\tSystemCode\n')
-        
+
         ens_version = unique.getCurrentGeneDatabaseVersion()
         ProcessedSpliceData_output = string.replace(DG_output,'DomainGraph','ProcessedSpliceData') ### This is the same as the DG export but without converting the probeset IDs for non-exon arrays
         ProcessedSpliceData_data = export.ExportFile(ProcessedSpliceData_output)
@@ -2034,7 +2032,7 @@ def splicingAnalysisAlgorithms(nonlog_NI_db,fold_dbase,dataset_name,gene_express
         DG_data.write(ens_version+"\n")
         DG_data.write("Probeset\tGeneID\tRegulation call\tSI\tSI p-value\tMiDAS p-value\n")
         ProcessedSpliceData_data.write("ExonID(s)\tGeneID\tRegulation call\t"+analysis_method+"\t"+analysis_method+" p-value\tMiDAS p-value\n")
-             
+
     if analysis_method == 'ASPIRE' or 'linearregres' in analysis_method:
         if perform_permutation_analysis == 'yes': p_value_type = 'permutation-values'
         else: p_value_type = 'FDR-'+p_value_call
@@ -2052,7 +2050,7 @@ def splicingAnalysisAlgorithms(nonlog_NI_db,fold_dbase,dataset_name,gene_express
         title +=['gene-expression-change', extra_exon_annotation ,'ExternalExonIDs','ExonRegionID','SplicingEvent','ExonAnnotationScore','large_splicing_diff',loc_column]
     else:
         goelite_data.write("GeneID\tSystemCode\tSI\tSI p-value\tMiDAS p-value\tSymbol\tExonID\n")
-            
+
         if analysis_method == 'splicing-index':
             NIpval = 'SI_rawp'; splicing_score = 'Splicing-Index'; lowestp = 'lowest_p (MIDAS or SI)'; AdjPcolumn = 'Deviation-Value'; #AdjPcolumn = 'SI_adjp'
         else:
@@ -2060,14 +2058,14 @@ def splicingAnalysisAlgorithms(nonlog_NI_db,fold_dbase,dataset_name,gene_express
         if array_type == 'RNASeq':
             id1='junctionID'; pval_column='junction p-value'; loc_column='junction location'
         else: id1='probeset'; pval_column='probeset p-value'; loc_column='probeset location'
-        
+
         if array_type == 'RNASeq': secondary_ID_title = 'Known/Novel Feature'
         else: secondary_ID_title = 'alternative gene ID'
-        
+
         title= ['Ensembl',splicing_score,'symbol','description','exons','regulation_call',id1,pval_column,lowestp,'midas p-value','fold','adjfold']
         title+=['up_exons','down_exons','functional_prediction','uniprot-ens_feature_predictions','peptide_predictions','ens_overlapping_domains','baseline_probeset_exp']
         title+=['constitutive_baseline_exp',NIpval,AdjPcolumn,'gene-expression-change']
-        title+=[secondary_ID_title, 'ensembl exons', 'consitutive exon', 'exon-region-ID', 'exon annotations','distal exon-region-ID',loc_column]    
+        title+=[secondary_ID_title, 'ensembl exons', 'consitutive exon', 'exon-region-ID', 'exon annotations','distal exon-region-ID',loc_column]
     title = string.join(title,'\t') + '\n'
     try:
         if original_conditions>2: title = string.replace(title,'regulation_call','conditions_compared')
@@ -2076,16 +2074,16 @@ def splicingAnalysisAlgorithms(nonlog_NI_db,fold_dbase,dataset_name,gene_express
 
     ### Calculate adjusted normalized intensity p-values
     fdr_exon_stats={}
-    if analysis_method != 'ASPIRE' and 'linearregres' not in analysis_method:    
+    if analysis_method != 'ASPIRE' and 'linearregres' not in analysis_method:
         for (score,entry) in splice_event_list: ### These are all "significant entries"
             fds = FDRStats(entry.TTestNormalizedRatios())
             fdr_exon_stats[entry.Probeset1()] = fds
         for probeset in excluded_probeset_db: ### These are all "non-significant entries"
             fds = FDRStats(excluded_probeset_db[probeset].TTestNormalizedRatios())
-            fdr_exon_stats[probeset] = fds        
+            fdr_exon_stats[probeset] = fds
     try: adjustPermuteStats(fdr_exon_stats)
     except Exception: null=[]
-    
+
     ### Calculate score average and stdev for each gene to alter get a Deviation Value
     gene_deviation_db={}
     for (score,entry) in splice_event_list:
@@ -2103,9 +2101,9 @@ def splicingAnalysisAlgorithms(nonlog_NI_db,fold_dbase,dataset_name,gene_express
             avg_dI=statistics.avg(gene_deviation_db[geneID])
             stdev_dI=statistics.stdev(gene_deviation_db[geneID])
             gene_deviation_db[geneID] = avg_dI,stdev_dI
-        except Exception: 
+        except Exception:
             gene_deviation_db[geneID] = 'NA','NA'
-    
+
     event_count = 0
     for (score,entry) in splice_event_list:
         event_count += 1
@@ -2133,25 +2131,25 @@ def splicingAnalysisAlgorithms(nonlog_NI_db,fold_dbase,dataset_name,gene_express
         avg_dI,stdev_dI = gene_deviation_db[affygene]
         try: DV = deviation(dI,avg_dI,stdev_dI) ### Note: the dI values are always in log2 space, independent of platform
         except Exception: DV = 'NA'
-            
+
         if affygene in annotate_db: description = annotate_db[affygene].Description(); symbol = annotate_db[affygene].Symbol()
         else: description = ''; symbol = ''
         ped1 = entry.ProbesetExprData1(); adjfold1 = ped1.AdjFold(); exp1 = ped1.BaselineExp(); fold1 = ped1.FoldChange(); rawp1 = ped1.ExpPval()
 
         ### Get Constitutive expression values
         baseline_const_exp = entry.ConstitutiveExpression()  ### For multiple group comparisosn
-            
+
         #if affygene in gene_expression_diff_db: mean_fold_change = gene_expression_diff_db[affygene].ConstitutiveFoldStr()
         try: mean_fold_change = str(entry.ConstitutiveFold()) ### For multi-condition analyses, the gene expression is dependent on the conditions compared
         except Exception: mean_fold_change = gene_expression_diff_db[affygene].ConstitutiveFoldStr()
-        
+
         if analysis_method == 'ASPIRE' or 'linearregres' in analysis_method:
             probeset2 = entry.Probeset2(); exons2 = exon_db[probeset2].ExonID(); rawp1 = str(entry.TTestNormalizedRatios()); rawp2 = str(entry.TTestNormalizedRatios2()); critical_probeset_list.append(probeset2)
             ped2 = entry.ProbesetExprData2(); adjfold2 = ped2.AdjFold(); exp2 = ped2.BaselineExp(); fold2 = ped2.FoldChange()
             try: location_summary=original_exon_db[selected_probeset].LocationSummary()+'|'+original_exon_db[probeset2].LocationSummary()
             except Exception:
                 try: location_summary=exon_db[selected_probeset].LocationSummary()+'|'+exon_db[probeset2].LocationSummary()
-                except Exception: location_summary=''    
+                except Exception: location_summary=''
             if array_type == 'AltMouse':
                 extra_transcript_annotation = exon_db[probeset1].GeneStructure()
             else:
@@ -2168,7 +2166,7 @@ def splicingAnalysisAlgorithms(nonlog_NI_db,fold_dbase,dataset_name,gene_express
                 if array_type == 'RNASeq':
                     try: extra_transcript_annotation = entry.NovelEvent() ### Instead of secondary gene ID, list known vs. novel reciprocal junction annotation
                     except Exception: None
-            
+
             exp_list = [float(exp1),float(exp2),float(exp1)+float(fold1),float(exp2)+float(fold2)]; exp_list.sort();  exp_list.reverse()
             probeset_tuple = (probeset1,probeset2)
         else:
@@ -2176,7 +2174,7 @@ def splicingAnalysisAlgorithms(nonlog_NI_db,fold_dbase,dataset_name,gene_express
             except Exception: exp_list = ['']
             probeset_tuple = (probeset1)
         highest_exp = exp_list[0]
-        
+
         ###Use permuted p-value or lowest expression junction p-value based on the situtation
         ###This p-value is used to filter out aspire events for further analyses
         if len(p_value_call)>0:
@@ -2190,7 +2188,7 @@ def splicingAnalysisAlgorithms(nonlog_NI_db,fold_dbase,dataset_name,gene_express
                 except Exception: raw_p_list = [1] ### Occurs when p='NA'
             raw_p_list.sort()
             lowest_raw_p = raw_p_list[0]; pos_permute = "NA"; total_permute = "NA"; false_pos = "NA"
-        
+
         if perform_permutation_analysis == 'yes':
             p_value_extra = str(pos_permute)+' out of '+str(total_permute)
         else: p_value_extra = str(pos_permute)
@@ -2223,7 +2221,7 @@ def splicingAnalysisAlgorithms(nonlog_NI_db,fold_dbase,dataset_name,gene_express
                 try: regulation_call = ped1.Annotation()
                 except Exception: null=[]
         except Exception: null=[]
-        
+
         ###Format functional results based on exon level fold change
         null = []
         #global a; a = exon_hits; global b; b=microRNA_attribute_db; kill
@@ -2247,7 +2245,7 @@ def splicingAnalysisAlgorithms(nonlog_NI_db,fold_dbase,dataset_name,gene_express
         if (float((lowest_raw_p))<=p_threshold or false_pos < 2) or lowest_raw_p == 1 or lowest_raw_p == 'NA':
             try: unique_exon_event_db[affygene].append(reciprocal_isoform_data)
             except KeyError: unique_exon_event_db[affygene] = [reciprocal_isoform_data]
-            
+
         ### Add functional attribute information to a new database
         for item in uniprot_exon_feature_list:
             attribute = item[0]
@@ -2262,7 +2260,7 @@ def splicingAnalysisAlgorithms(nonlog_NI_db,fold_dbase,dataset_name,gene_express
             exon = item[1]
             if (float((lowest_raw_p))<=p_threshold or false_pos < 2) or lowest_raw_p == 1 or lowest_raw_p == 'NA':
               try: microRNA_exon_feature_db2[affygene,attribute].append(exon)
-              except KeyError: microRNA_exon_feature_db2[affygene,attribute]=[exon]              
+              except KeyError: microRNA_exon_feature_db2[affygene,attribute]=[exon]
         ### Add functional attribute information to a new database
         for item in functional_attribute_list2:
             attribute = item[0]
@@ -2270,7 +2268,7 @@ def splicingAnalysisAlgorithms(nonlog_NI_db,fold_dbase,dataset_name,gene_express
             if (float((lowest_raw_p))<=p_threshold or false_pos < 2) or lowest_raw_p == 1 or lowest_raw_p == 'NA':
               try: functional_attribute_db2[affygene,attribute].append(exon)
               except KeyError: functional_attribute_db2[affygene,attribute]=[exon]
-                    
+
         try:
             abs_fold = abs(float(mean_fold_change)); fold_direction = 'down'; fold1_direction = 'down'; fold2_direction = 'down'
             large_splicing_diff1 = 0; large_splicing_diff2 = 0; large_splicing_diff = 'null'; opposite_splicing_pattern = 'no'
@@ -2280,7 +2278,7 @@ def splicingAnalysisAlgorithms(nonlog_NI_db,fold_dbase,dataset_name,gene_express
                 if float(fold1)>float(mean_fold_change): large_splicing_diff1 = float(fold1)-float(mean_fold_change)
         except Exception:
             fold_direction = ''; large_splicing_diff = ''; opposite_splicing_pattern = ''
-          
+
         if analysis_method != 'ASPIRE' and 'linearregres' not in analysis_method: ed = exon_db[probeset1]
         else:
             try: ed = critical_probeset_annotation_db[selected_probeset,probeset2]
@@ -2291,7 +2289,7 @@ def splicingAnalysisAlgorithms(nonlog_NI_db,fold_dbase,dataset_name,gene_express
         custom_annotations = ["alt-3'","alt-5'","alt-C-term","alt-N-term","cassette-exon","cassette-exon","exon-region-exclusion","intron-retention","mutually-exclusive-exon","trans-splicing"]
 
         custom_exon_annotations_found='no'; ucsc_annotations_found = 'no'; exon_annot_score=0
-        if len(ed.SplicingEvent())>0: 
+        if len(ed.SplicingEvent())>0:
             for annotation in ucsc_splice_annotations:
                 if annotation in ed.SplicingEvent(): ucsc_annotations_found = 'yes'
             for annotation in custom_annotations:
@@ -2300,12 +2298,12 @@ def splicingAnalysisAlgorithms(nonlog_NI_db,fold_dbase,dataset_name,gene_express
         if custom_exon_annotations_found == 'yes' and ucsc_annotations_found == 'no': exon_annot_score = 3
         elif ucsc_annotations_found == 'yes' and custom_exon_annotations_found == 'no': exon_annot_score = 4
         elif ucsc_annotations_found == 'yes' and custom_exon_annotations_found == 'yes': exon_annot_score = 5
-        else: exon_annot_score = 2 
+        else: exon_annot_score = 2
         try: gene_splice_event_score[affygene].append(exon_annot_score) ###store for gene level results
         except KeyError: gene_splice_event_score[affygene] = [exon_annot_score]
         try: gene_exon_region[affygene].append(ed.ExonRegionID()) ###store for gene level results
-        except KeyError: gene_exon_region[affygene] = [ed.ExonRegionID()]          
-                    
+        except KeyError: gene_exon_region[affygene] = [ed.ExonRegionID()]
+
         if analysis_method == 'ASPIRE' or 'linearregres' in analysis_method:
             if float(fold2)>0: fold2_direction = 'up'
             if fold2_direction != fold_direction:
@@ -2314,7 +2312,7 @@ def splicingAnalysisAlgorithms(nonlog_NI_db,fold_dbase,dataset_name,gene_express
                     if abs(large_splicing_diff2) > large_splicing_diff1: large_splicing_diff = str(large_splicing_diff2)
                     else: large_splicing_diff = str(large_splicing_diff1)
             if fold1_direction != fold2_direction and abs(float(fold1))>0.4 and abs(float(fold2))>0.4 and abs(float(mean_fold_change))< max([float(fold2),float(fold1)]):
-                opposite_splicing_pattern = 'yes'                                                                                         
+                opposite_splicing_pattern = 'yes'
 
             ### Annotate splicing events based on exon_strucuture data
             if array_type == 'AltMouse':
@@ -2327,7 +2325,7 @@ def splicingAnalysisAlgorithms(nonlog_NI_db,fold_dbase,dataset_name,gene_express
                 try: direct_domain_gene_alignments[affygene]+=', '+direct_domain_alignments
                 except KeyError: direct_domain_gene_alignments[affygene]=direct_domain_alignments
             except KeyError: direct_domain_alignments = ' '
-            
+
             splicing_event = ed.SplicingEvent()
             if array_type == 'RNASeq':
                 splicing_event = checkForTransSplicing(probeset1_display,splicing_event)
@@ -2342,7 +2340,7 @@ def splicingAnalysisAlgorithms(nonlog_NI_db,fold_dbase,dataset_name,gene_express
                 adjfold2 = covertLogFoldToNonLog(adjfold2)
                 mean_fold_change = covertLogFoldToNonLog(mean_fold_change)
 
-            ### Annotate splicing events based on pre-computed and existing annotations  
+            ### Annotate splicing events based on pre-computed and existing annotations
             values= [affygene,dI,symbol,fs(description),exons1,exons2,regulation_call,event_call,probeset1_display,rawp1,probeset2,rawp2,fold1,fold2,adjfold1,adjfold2]
             values+=[extra_transcript_annotation,up_exons,down_exons,fs(new_functional_attribute_str),fs(new_uniprot_exon_feature_str),fs(seq_attribute_str),exp1,exp2,fs(direct_domain_alignments)]
             values+=[str(baseline_const_exp),str(lowest_raw_p),p_value_extra,str(false_pos),mean_fold_change,extra_exon_annotation]
@@ -2353,7 +2351,7 @@ def splicingAnalysisAlgorithms(nonlog_NI_db,fold_dbase,dataset_name,gene_express
             values_ps = [probeset1+'|'+probeset2,affygene,'changed',dI,'NA',str(lowest_raw_p)]; values_ps = string.join(values_ps,'\t')+'\n'
             try: ProcessedSpliceData_data.write(values_ps)
             except Exception: None
-            
+
             values_ge = [affygene,'En',dI,str(lowest_raw_p),symbol,probeset1_display+' | '+probeset2]; values_ge = string.join(values_ge,'\t')+'\n'
             if array_type == 'junction' or array_type == 'RNASeq':   ### Only applies to reciprocal junction sensitive platforms (but not currently AltMouse)
                 goelite_data.write(values_ge)
@@ -2372,7 +2370,7 @@ def splicingAnalysisAlgorithms(nonlog_NI_db,fold_dbase,dataset_name,gene_express
                     elif float(dI)<0:
                         SRFinder_in_data.write(values_srf)
             except Exception: null=[]
-            
+
         else:
             si_pvalue = lowest_raw_p
             if si_pvalue == 1: si_pvalue = 'NA'
@@ -2380,7 +2378,7 @@ def splicingAnalysisAlgorithms(nonlog_NI_db,fold_dbase,dataset_name,gene_express
                 midas_p = str(midas_db[probeset1])
                 if float(midas_p)<lowest_raw_p: lowest_raw_p = float(midas_p) ###This is the lowest and SI-pvalue
             else: midas_p = ''
-            
+
             ###Determine what type of exon-annotations are present to assign a confidence score
             if affygene in annotate_db: ###Determine the transcript clusters used to comprise a splice event (genes and exon specific)
                 try:
@@ -2403,7 +2401,7 @@ def splicingAnalysisAlgorithms(nonlog_NI_db,fold_dbase,dataset_name,gene_express
             try: last_exon_region = last_exon_region_db[affygene]
             except KeyError: last_exon_region = ''
             if cluster_number>1: exon_annot_score = 1
-            
+
             direct_domain_alignments = ' '
             if array_type == 'exon' or array_type == 'gene' or explicit_data_type != 'null':
                 try:
@@ -2414,7 +2412,7 @@ def splicingAnalysisAlgorithms(nonlog_NI_db,fold_dbase,dataset_name,gene_express
             else:
                 try: direct_domain_alignments = probeset_aligning_db[affygene+':'+exons1]
                 except KeyError: direct_domain_alignments = ''
-                
+
             if array_type == 'RNASeq':
                 exp1 = covertLogExpressionToNonLog(exp1)
                 baseline_const_exp = covertLogExpressionToNonLog(baseline_const_exp)
@@ -2422,14 +2420,14 @@ def splicingAnalysisAlgorithms(nonlog_NI_db,fold_dbase,dataset_name,gene_express
 
                 adjfold1 = covertLogFoldToNonLog(adjfold1)
                 mean_fold_change = covertLogFoldToNonLog(mean_fold_change)
-                
+
             try: adj_SIp=fdr_exon_stats[probeset1].AdjP()
             except Exception: adj_SIp = 'NA'
             try: secondary_geneid = ed.SecondaryGeneID()
             except Exception: secondary_geneid = affygene
             if array_type == 'RNASeq':
                 secondary_geneid = ed.NovelExon()
-            
+
             ### Write Splicing Index results
             values= [affygene,dI,symbol,fs(description),exons1,regulation_call,probeset1,rawp1,str(lowest_raw_p),midas_p,fold1,adjfold1]
             values+=[up_exons,down_exons,fs(new_functional_attribute_str),fs(new_uniprot_exon_feature_str),fs(seq_attribute_str),fs(direct_domain_alignments),exp1]
@@ -2438,7 +2436,7 @@ def splicingAnalysisAlgorithms(nonlog_NI_db,fold_dbase,dataset_name,gene_express
             if probeset1 in filtered_probeset_db: values += filtered_probeset_db[probeset1]
             exon_sets = abs(float(dI)),regulation_call,event_call,exons1,exons1,midas_p
             probeset = probeset1 ### store original ID (gets converted below)
-            
+
             ### Write DomainGraph results
             try: midas_p = str(midas_db[probeset1])
             except KeyError: midas_p = 'NA'
@@ -2447,7 +2445,7 @@ def splicingAnalysisAlgorithms(nonlog_NI_db,fold_dbase,dataset_name,gene_express
             values_ps = [probeset1,affygene,'changed',dI,'NA',str(lowest_raw_p)]; values_ps = string.join(values_ps,'\t')+'\n'
             try: ProcessedSpliceData_data.write(values_ps)
             except Exception: None
-            
+
             if array_type == 'gene' or array_type == 'junction' or array_type == 'RNASeq':
                 if (array_type == 'junction' or array_type == 'RNASeq') and explicit_data_type == 'null':
                     try: exon_probeset = exon_array_translation_db[affygene+':'+exon_data[1][0]][0]; probeset1 = exon_probeset; gcn+=1
@@ -2467,11 +2465,11 @@ def splicingAnalysisAlgorithms(nonlog_NI_db,fold_dbase,dataset_name,gene_express
             except Exception: null=[]
             values_ge = [affygene,'En',dI,str(si_pvalue),midas_p,symbol,probeset]; values_ge = string.join(values_ge,'\t')+'\n'
             goelite_data.write(values_ge)
-            
+
         if len(ed.SplicingEvent())>2:
             try: external_exon_annot[affygene].append(ed.SplicingEvent())
             except KeyError: external_exon_annot[affygene] = [ed.SplicingEvent()]
-            
+
         try: values = string.join(values,'\t')+'\n'
         except Exception: print values;kill
         data.write(values)
@@ -2494,7 +2492,7 @@ def splicingAnalysisAlgorithms(nonlog_NI_db,fold_dbase,dataset_name,gene_express
     try: clearObjectsFromMemory(original_exon_db)
     except Exception: null=[]
     exon_array_translation_db=[]; original_exon_db=[]; probeset_to_gene=[]
-    
+
     ### Finish writing the DomainGraph export file with non-significant probesets
     if array_type != 'AltMouse':
         for probeset in excluded_probeset_db:
@@ -2502,17 +2500,17 @@ def splicingAnalysisAlgorithms(nonlog_NI_db,fold_dbase,dataset_name,gene_express
 
             try: midas_p = str(midas_db[probeset])
             except KeyError: midas_p = 'NA'
-            
+
             ### Export significant exon/junction IDs and scores
             try: values_ps = [probeset,eed.GeneID(),'UC',eed.Score(),str(eed.TTestNormalizedRatios()),midas_p]
             except Exception: excl_probeset, geneid, score, rawp, pvalue = eed; values_ps = [probeset,geneid,'UC', str(score), str(rawp), str(pvalue)]
             values_ps = string.join(values_ps,'\t')+'\n'; ProcessedSpliceData_data.write(values_ps)
-            
+
             ### Write DomainGraph results
             if array_type == 'gene' or array_type == 'junction' or array_type == 'RNASeq':
                 try: exon_probeset = exon_array_translation_db[probeset][0]; probeset = exon_probeset; gcn+=1
                 except Exception: probeset=None; # null=[] - force an error - new in version 2.0.8
-                
+
             try: values_dg = [probeset,eed.GeneID(),'UC',eed.Score(),str(eed.TTestNormalizedRatios()),midas_p]
             except Exception:
                 try:
@@ -2524,7 +2522,7 @@ def splicingAnalysisAlgorithms(nonlog_NI_db,fold_dbase,dataset_name,gene_express
                 null=int(probeset)
                 values_dg = string.join(values_dg,'\t')+'\n'; DG_data.write(values_dg)
             except Exception: null=[]
-        
+
         if array_type == 'gene' or array_type == 'junction' or array_type == 'RNASeq':
             for id in exon_array_translation_db:
                 SRFinder_denom_data.write(exon_array_translation_db[id]+'\tAe\n')
@@ -2540,27 +2538,27 @@ def splicingAnalysisAlgorithms(nonlog_NI_db,fold_dbase,dataset_name,gene_express
         domains = string.split(direct_domain_gene_alignments[affygene],', ')
         domains = unique.unique(domains); domains = string.join(domains,', ')
         direct_domain_gene_alignments[affygene] = domains
-        
-    ### functional_attribute_db2 will be reorganized so save the database with another. Use this  
+
+    ### functional_attribute_db2 will be reorganized so save the database with another. Use this
     functional_attribute_db = functional_attribute_db2
     functional_attribute_db2 = reorganize_attribute_entries(functional_attribute_db2,'no')
     external_exon_annot = eliminate_redundant_dict_values(external_exon_annot)
 
     protein_exon_feature_db = protein_exon_feature_db2
     protein_exon_feature_db2 = reorganize_attribute_entries(protein_exon_feature_db2,'no')
- 
-    ############   Export Gene Data ############        
+
+    ############   Export Gene Data ############
     up_splice_val_genes = 0; down_dI_genes = 0; diff_exp_spliced_genes = 0; diff_spliced_rna_factor = 0
     ddI = 0; udI = 0
 
     summary_data_db['direct_domain_genes']=len(direct_domain_gene_alignments)
     summary_data_db['alt_genes']=len(aspire_gene_results)
-    
+
     critical_gene_exons = eliminate_redundant_dict_values(critical_gene_exons)
     aspire_output_gene = root_dir+'AltResults/AlternativeOutput/' + dataset_name + analysis_method + '-exon-inclusion-GENE-results.txt'
     data = export.ExportFile(aspire_output_gene)
     if array_type == 'AltMouse': goelite_data.write("GeneID\tSystemCode\n")
-    
+
     title = ['AffyGene','max_dI','midas-p (corresponding)','symbol','external gene ID','description','regulation_call','event_call']
     title +=['number_of_comparisons','num_effected_exons','up_exons','down_exons','functional_attribute','uniprot-ens_exon_features','direct_domain_alignments']
     title +=['pathways','mean_fold_change','exon-annotations','exon-region IDs','alternative gene ID','splice-annotation score']
@@ -2580,7 +2578,7 @@ def splicingAnalysisAlgorithms(nonlog_NI_db,fold_dbase,dataset_name,gene_express
 
         if array_type == 'AltMouse':
             if len(ensembl) >0: goelite_data.write(ensembl+'\tL\n')
-            
+
         try: gene_splice_event_score[affygene].sort(); top_se_score = str(gene_splice_event_score[affygene][-1])
         except KeyError: top_se_score = 'NA'
         try: gene_regions = gene_exon_region[affygene]; gene_regions = makeUnique(gene_regions); gene_regions = string.join(gene_regions,'|')
@@ -2651,10 +2649,10 @@ def splicingAnalysisAlgorithms(nonlog_NI_db,fold_dbase,dataset_name,gene_express
         ###Add annotations for where in the gene structure these exons are (according to Ensembl)
         if affygene in external_exon_annot: external_gene_annot = string.join(external_exon_annot[affygene],', ')
         else: external_gene_annot = ''
-        
+
         if array_type == 'RNASeq':
             mean_fold_change = covertLogFoldToNonLog(mean_fold_change)
-                
+
         values =[affygene,max_dI,midas_p,symbol,ensembl,fs(description),regulation_call,event_call,number_of_comparisons]
         values+=[num_critical_exons,up_exons,down_exons,functional_annotation]
         values+=[fs(uniprot_exon_annotation),fs(direct_domain_annots),fs(goa),mean_fold_change,external_gene_annot,gene_regions,transcript_clusters,top_se_score]
@@ -2688,14 +2686,14 @@ def splicingAnalysisAlgorithms(nonlog_NI_db,fold_dbase,dataset_name,gene_express
         if len(rna_processing_factor) > 1:
             if gene_fold>log_fold_cutoff: upregulated_rna_factor += 1
             elif abs(gene_fold)>log_fold_cutoff: downregulated_rna_factor += 1
-  
+
     ###Generate three files for downstream functional summary
     ### functional_annotation_db2 is output to the same function as functional_annotation_db, ranked_uniprot_list_all to get all ranked uniprot annotations,
     ### and ranked_uniprot_list_coding_only to get only coding ranked uniprot annotations
     functional_annotation_db2, ranked_uniprot_list_all = grab_summary_dataset_annotations(protein_exon_feature_db,'','') #functional_attribute_db
     null, ranked_uniprot_list_coding_only = grab_summary_dataset_annotations(protein_exon_feature_db,functional_attribute_db,'') #functional_attribute_db
 
-    functional_attribute_db=[]; protein_exon_feature_db=[]  
+    functional_attribute_db=[]; protein_exon_feature_db=[]
     ###Sumarize changes in avg protein length for each splice event
     up_protein_list=[];down_protein_list=[]; protein_length_fold_diff=[]
     for [down_protein,up_protein] in protein_length_list:
@@ -2724,7 +2722,7 @@ def splicingAnalysisAlgorithms(nonlog_NI_db,fold_dbase,dataset_name,gene_express
         except Exception: p = 'NA'
         if p == 1: p = 'NA'
     else: p = 'NA'
-    
+
     ###Calculate unique reciprocal isoforms for exon-inclusion, exclusion and mutual-exclusive events
     unique_exon_inclusion_count=0;unique_exon_exclusion_count=0;unique_mutual_exclusive_count=0;
     unique_exon_event_db = eliminate_redundant_dict_values(unique_exon_event_db)
@@ -2752,12 +2750,12 @@ def splicingAnalysisAlgorithms(nonlog_NI_db,fold_dbase,dataset_name,gene_express
 
     ###Add splice event information to the functional_annotation_db
     for splice_event in splice_event_db:count = splice_event_db[splice_event]; functional_annotation_db.append((splice_event,count))
-    
+
     if analysis_method == 'splicing-index' or analysis_method == 'FIRMA': udI='NA'; ddI='NA'
-    
+
     summary_results_db[dataset_name[0:-1]] =  udI,ddI,mx,up_splice_val_genes,down_dI_genes,(up_splice_val_genes + down_dI_genes),upregulated_genes, downregulated_genes, diff_exp_spliced_genes, upregulated_rna_factor,downregulated_rna_factor,diff_spliced_rna_factor,down_avg,down_std,up_avg,up_std,p,median_fold_diff,functional_annotation_db
     result_list = exportComparisonSummary(dataset_name,summary_data_db,'log')
-    
+
     ###Re-set this variable (useful for testing purposes)
     clearObjectsFromMemory(gene_expression_diff_db)
     clearObjectsFromMemory(splice_event_list); clearObjectsFromMemory(si_db); si_db=[]
@@ -2777,7 +2775,7 @@ def splicingAnalysisAlgorithms(nonlog_NI_db,fold_dbase,dataset_name,gene_express
     microRNA_attribute_db=[]; probeset_mirBS_db=[]; exon_hits=[]; critical_gene_exons=[]; gene_exon_region=[]; exon_db=[]; external_exon_annot=[];
     values=[]; down_protein_list=[]; functional_annotation_db=[]; protein_length_fold_diff=[]; comparison_count=[]; filtered_arrayids=[];
     domain_hit_gene_count_db=[]; up_protein_list=[]; probeset_domain_db=[]
-    
+
     try: goelite_data.close()
     except Exception: null=[]
     """
@@ -2787,9 +2785,9 @@ def splicingAnalysisAlgorithms(nonlog_NI_db,fold_dbase,dataset_name,gene_express
             try:
                 if len(locals()[var])>500: print var, len(locals()[var])
             except Exception: null=[]
-    """       
+    """
     return summary_results_db, summary_results_db2, aspire_output, aspire_output_gene, critical_exon_db_len
-    
+
 def deviation(dI,avg_dI,stdev_dI):
     dI = covertLogFoldToNonLogFloat(dI)
     avg_dI = covertLogFoldToNonLogFloat(avg_dI)
@@ -2802,19 +2800,19 @@ def covertLogExpressionToNonLog(log_val):
     else:
         nonlog_val = (math.pow(2,float(log_val)))-1
     return str(nonlog_val)
-    
+
 def covertLogFoldToNonLog(log_val):
     try:
         if float(log_val)<0: nonlog_val = (-1/math.pow(2,(float(log_val))))
         else: nonlog_val = (math.pow(2,float(log_val)))
     except Exception: nonlog_val = log_val
     return str(nonlog_val)
-    
+
 def covertLogFoldToNonLogFloat(log_val):
     if float(log_val)<0: nonlog_val = (-1/math.pow(2,(float(log_val))))
     else: nonlog_val = (math.pow(2,float(log_val)))
     return nonlog_val
-    
+
 def checkForTransSplicing(uid,splicing_event):
     pl = string.split(uid,':')
     if len(pl)>2:
@@ -2838,12 +2836,12 @@ def analyzeSplicingIndex(fold_dbase):
     The method ultimately producing the highest proportion of true positives was to retain only: a) exons with a DABG p-value < 0.05,
     b) genes with a signal > 70, c) exons with a log ratio between tissues (i.e., the gene-level normalized fold change) > 0.5,
     d) Splicing Index p-values < 0.005 and e) Core exons.
-    
+
     Gardina PJ, Clark TA, Shimada B, Staples MK, Yang Q, Veitch J, Schweitzer A, Awad T, Sugnet C, Dee S, Davies C, Williams A, Turpaz Y.
     Alternative splicing and differential gene expression in colon cancer detected by a whole genome exon array.
     BMC Genomics. 2006 Dec 27;7:325. PMID: 17192196
     """
-    
+
     ### Used to restrict the analysis to a pre-selected set of probesets (e.g. those that have a specifc splicing pattern)
     if len(filtered_probeset_db)>0:
         temp_db={}
@@ -2860,8 +2858,8 @@ def analyzeSplicingIndex(fold_dbase):
             if as_call == 0:
                 try: del fold_dbase[probeset]
                 except KeyError: null=[]
-            
-    ### Used to the export relative individual adjusted probesets fold changes used for splicing index values   
+
+    ### Used to the export relative individual adjusted probesets fold changes used for splicing index values
     if export_NI_values == 'yes':
         summary_output = root_dir+'AltResults/RawSpliceData/'+species+'/'+analysis_method+'/'+dataset_name[:-1]+'.txt'
         data = export.ExportFile(summary_output)
@@ -2935,16 +2933,16 @@ def analyzeSplicingIndex(fold_dbase):
                         constit_exp1 = original_avg_const_exp_db[geneid][0]
                         constit_exp2 = original_avg_const_exp_db[geneid][1]
                         ge_fold=constit_exp2-constit_exp1
-                        
+
                         ### Re-define all of the pairwise values now that the two Splicing-Index groups to report have been determined
                         data_list1 = array_raw_group_values[probeset][0]; data_list2 = array_raw_group_values[probeset][1]
                         baseline_exp = statistics.avg(data_list1); experimental_exp = statistics.avg(data_list2); fold_change = experimental_exp - baseline_exp
                         try:
                             ttest_exp_p = statistics.runComparisonStatistic(data_list1,data_list2,probability_statistic)
-                        except Exception: ttest_exp_p = 1                                
+                        except Exception: ttest_exp_p = 1
                         normInt1 = (baseline_exp-constit_exp1); normInt2 = (experimental_exp-constit_exp2); adj_fold = normInt2 - normInt1
                         ped = ProbesetExpressionData(baseline_exp, experimental_exp, fold_change, adj_fold, ttest_exp_p, '')
-    
+
                         sid = ExonData(splicing_index,probeset,critical_exon_list,geneid,group1_ratios,group2_ratios,normIntensityP,opposite_SI_log_mean)
                         sid.setConstitutiveExpression(constit_exp1); sid.setConstitutiveFold(ge_fold); sid.setProbesetExpressionData(ped)
                         splicing_index_hash.append((splicing_index,sid))
@@ -3060,7 +3058,7 @@ def importProbeToProbesets(fold_dbase):
     input_count = len(gene2examine)  ### Number of probesets or probeset pairs (junction array) alternatively regulated
     original_increment = int(input_count/20); increment = original_increment
     start_time = time.time(); x=0
-            
+
     probe_probeset_db={}; gene_count=0; total_gene_count = 0; max_gene_count=3000; round = 1
     for gene in gene2examine:
         gene_count+=1; total_gene_count+=1; x+=1
@@ -3074,7 +3072,7 @@ def importProbeToProbesets(fold_dbase):
             print '*',
             gene_count=0; probe_probeset_db={}; round+=1 ### Reset these variables and re-run
 
-    probeset_probe_db={}            
+    probeset_probe_db={}
     ### Analyze residuals for the remaining probesets (< max_gene_count)
     importResiduals(filename,probe_probeset_db)
     end_time = time.time(); time_diff = int(end_time-start_time)
@@ -3087,7 +3085,7 @@ def FIRMAanalysis(fold_dbase):
     of that probe) from APT, for all probes corresponding to a metaprobeset (Ensembl gene in AltAnalyze). These probe residuals
     are imported and the ratio of the median residual per probeset per sample divided by the absolute standard deviation of the
     median of all probes for all samples for that gene."""
-    
+
     ### Used to restrict the analysis to a pre-selected set of probesets (e.g. those that have a specifc splicing pattern)
     if len(filtered_probeset_db)>0:
         temp_db={}
@@ -3107,25 +3105,25 @@ def FIRMAanalysis(fold_dbase):
 
     #print 'Beginning FIRMA analysis (please be patient)...'
 
-    ### Used to the export relative individual adjusted probesets fold changes used for splicing index values   
+    ### Used to the export relative individual adjusted probesets fold changes used for splicing index values
     if export_NI_values == 'yes':
         sample_names_ordered = [] ### note: Can't use original_array_names since the order is potentially different (FIRMA stores sample data as indeces within dictionary keys)
         for group_name in array_group_list: ### THIS LIST IS USED TO MAINTAIN CONSISTENT GROUP ORDERING DURING ANALYSIS
             for sample_name in array_group_name_db[group_name]: sample_names_ordered.append(sample_name)
-            
+
         summary_output = root_dir+'AltResults/RawSpliceData/'+species+'/'+analysis_method+'/'+dataset_name[:-1]+'.txt'
         data = export.ExportFile(summary_output)
         title = string.join(['gene-probesets']+sample_names_ordered,'\t')+'\n'; data.write(title)
-    
+
     ### Import probes for probesets to be analyzed
     global firma_scores; firma_scores = {}
     importProbeToProbesets(fold_dbase)
     print 'FIRMA scores obtained for',len(firma_scores),'probests.'
-    
+
     ### Group sample scores for each probeset and calculate statistics
     firma_hash=[]; excluded_probeset_db={}; denominator_probesets=0; interaction = 0
     original_increment = int(len(firma_scores)/20); increment = original_increment
-    
+
     for probeset in firma_scores:
       if probeset in fold_dbase: ### Filter based on expression
         ed = exon_db[probeset]; geneid = ed.GeneID()
@@ -3146,7 +3144,7 @@ def FIRMAanalysis(fold_dbase):
             firma_list = firma_group_array[group_name]
             if len(array_group_list)>2: firma_list = statistics.avg(firma_list), firma_list, index
             firma_lists.append(firma_list); index+=1
-            
+
         if export_NI_values == 'yes': ### DO THIS HERE SINCE firma_lists IS SORTED BELOW!!!!
             try: er = ed.ExonID()
             except Exception: er = 'NA'
@@ -3173,7 +3171,7 @@ def FIRMAanalysis(fold_dbase):
         firma_fold_change = -1*firma_fold_change   ### Make this equivalent to Splicing Index fold which is also relative to experimental not control
         if (firma_avg2*firma_avg1)<0: opposite_FIRMA_scores = 'yes'
         else: opposite_FIRMA_scores = 'no'
-        
+
         if probeset in midas_db:
             try: midas_p = float(midas_db[probeset])
             except ValueError: midas_p = 0
@@ -3188,15 +3186,15 @@ def FIRMAanalysis(fold_dbase):
 
             ### Re-define all of the pairwise values now that the two FIRMA groups to report have been determined
             data_list1 = array_raw_group_values[probeset][index1]; data_list2 = array_raw_group_values[probeset][index2]
-            
+
             baseline_exp = statistics.avg(data_list1); experimental_exp = statistics.avg(data_list2); fold_change = experimental_exp - baseline_exp
             group_name1 = array_group_list[index1]; group_name2 = array_group_list[index2]
             try:
                 ttest_exp_p = statistics.runComparisonStatistic(data_list1,data_list2,probability_statistic)
-            except Exception: ttest_exp_p = 1                                
+            except Exception: ttest_exp_p = 1
             normInt1 = (baseline_exp-constit_exp1); normInt2 = (experimental_exp-constit_exp2); adj_fold = normInt2 - normInt1
             ped = ProbesetExpressionData(baseline_exp, experimental_exp, fold_change, adj_fold, ttest_exp_p, group_name2+'_vs_'+group_name1)
-                
+
             fid = ExonData(firma_fold_change,probeset,critical_exon_list,geneid,data_list1,data_list2,normIntensityP,opposite_FIRMA_scores)
             fid.setConstitutiveExpression(constit_exp1); fid.setConstitutiveFold(ge_fold); fid.setProbesetExpressionData(ped)
 
@@ -3289,7 +3287,7 @@ def importProbesetAligningDomains(exon_db,report_type):
                     new_domain_list_str = string.join(new_domain_list,', ')
                     gene_protein_ft_db[gene,id] = new_domain_list2
                     probeset_aligning_db2[id] = new_domain_list_str
-                    
+
     #print exon_db['107650']
     for probeset in exon_db:
         if probeset in probeset_indirect_aligning_db:
@@ -3297,7 +3295,7 @@ def importProbesetAligningDomains(exon_db,report_type):
             if filter_for_AS == 'yes':
                 as_call = exon_db[probeset].SplicingCall()
                 if as_call == 1: proceed = 'yes'
-            else: proceed = 'yes'            
+            else: proceed = 'yes'
             gene = exon_db[probeset].GeneID()
             new_domain_list=[]; new_domain_list2=[]
             if report_type == 'gene' and proceed == 'yes':
@@ -3332,7 +3330,7 @@ def importProbesetAligningDomains(exon_db,report_type):
         return probeset_aligning_db2
     elif report_type == 'probeset':
         probeset_aligning_db2=[]
-        return gene_protein_ft_db,domain_gene_count_db,protein_functional_attribute_db  
+        return gene_protein_ft_db,domain_gene_count_db,protein_functional_attribute_db
     else:
         probeset_aligning_db2=[]; protein_functional_attribute_db=[]; probeset_aligning_db2=[]
         len_gene_protein_ft_db = len(gene_protein_ft_db); gene_protein_ft_db=[]
@@ -3346,7 +3344,7 @@ def importProbesetProteinCompDomains(exon_db,report_type,comp_type):
     filename = 'AltDatabase/'+species+'/'+array_type+'/probeset-protein-annotations-'+comp_type+'.txt'
     if (array_type == 'junction' or array_type == 'RNASeq') and explicit_data_type != 'null': filename=getFilteredFilename(filename)
     filename=getExonVersionFilename(filename)
-    
+
     gene_protein_ft_db={};domain_gene_count_db={}
     for probeset in exon_db:
         initial_proceed = 'no'; original_probeset = probeset
@@ -3389,15 +3387,15 @@ def importProbesetProteinCompDomains(exon_db,report_type,comp_type):
                 gene_protein_ft_db[gene,original_probeset] = new_domain_list
 
     domain_gene_count_db = eliminate_redundant_dict_values(domain_gene_count_db)
-    
+
     probeset_aligning_db=[] ### Clear memory
     probeset_aligning_protein_db = importGeneric(filename)
-    
+
     probeset_pairs={} ### Store all possible probeset pairs as single probesets for protein-protein associations
     for probeset in exon_db:
         if len(probeset)==2:
             for p in probeset: probeset_pairs[p] = probeset
-            
+
     if report_type == 'probeset':
         ### Below code was re-written to be more memory efficient by not storing all data in probeset-domain-annotations-*comp*.txt via generic import
         protein_functional_attribute_db={}; probeset_protein_associations={}; protein_db={}
@@ -3407,7 +3405,7 @@ def importProbesetProteinCompDomains(exon_db,report_type,comp_type):
             elif array_type == 'AltMouse' or ((array_type == 'junction' or array_type == 'RNASeq') and explicit_data_type == 'null'):
                 if '|' in probeset[0]: probeset1 = string.split(probeset[0],'|')[0]; probeset = probeset1,probeset[1]
                 try: alternate_probeset_id = exon_db[probeset].InclusionLookup(); probeset = alternate_probeset_id,probeset[1]
-                except Exception: null=[]                
+                except Exception: null=[]
                 probeset_joined = string.join(probeset,'|')
                 #print [probeset_joined],[probeset]
                 if probeset_joined in probeset_aligning_protein_db: initial_proceed = 'yes'; probeset = probeset_joined
@@ -3443,11 +3441,11 @@ def importProbesetProteinCompDomains(exon_db,report_type,comp_type):
                 protein_functional_attribute_db[key].append((seq_attr,call))
             except KeyError: null=[]
         protein_seq_db=[]; probeset_aligning_protein_db=[]
-        return gene_protein_ft_db,domain_gene_count_db,protein_functional_attribute_db  
+        return gene_protein_ft_db,domain_gene_count_db,protein_functional_attribute_db
     else:
         probeset_aligning_protein_db=[]; len_gene_protein_ft_db = len(gene_protein_ft_db); gene_protein_ft_db=[]
-        return len_gene_protein_ft_db,domain_gene_count_db      
-        
+        return len_gene_protein_ft_db,domain_gene_count_db
+
 class SimpleJunctionData:
     def __init__(self, geneid, probeset1, probeset2, probeset1_display, critical_exon_list):
         self._geneid = geneid; self._probeset1 = probeset1; self._probeset2 = probeset2
@@ -3465,7 +3463,7 @@ class SimpleJunctionData:
     def SplicingCall(self): return self._splicing_call
     def setInclusionLookup(self,incl_junction_probeset): self.incl_junction_probeset = incl_junction_probeset
     def InclusionLookup(self): return self.incl_junction_probeset
-    
+
 def formatJunctionData(probesets,affygene,critical_exon_list):
     if '|' in probesets[0]: ### Only return the first inclusion probeset (agglomerated probesets)
         incl_list = string.split(probesets[0],'|')
@@ -3496,23 +3494,23 @@ class JunctionExpressionData:
     def ProbesetExprData(self): return self.ped
     def __repr__(self): return self.ConNI()+'|'+self.ExpNI()
 
-    
+
 def calculateAllASPIREScores(p1,p2):
     b1o = p1.ConNIAvg(); b2o = p2.ConNIAvg()
     e1o = p1.ExpNIAvg(); e2o = p2.ExpNIAvg(); original_score = statistics.aspire_stringent(b1o,e1o,b2o,e2o)
-    
+
     index=0; baseline_scores=[] ### Loop through each control ratio and compare to control ratio mean
     for b1 in p1.ConNI():
         b2 = p2.ConNI()[index]
         score = statistics.aspire_stringent(b2,e2o,b1,e1o); index+=1
         baseline_scores.append(score)
-        
+
     index=0; exp_scores=[] ### Loop through each experimental ratio and compare to control ratio mean
     for e1 in p1.ExpNI():
         e2 = p2.ExpNI()[index]
         score = statistics.aspire_stringent(b1o,e1,b2o,e2); index+=1
         exp_scores.append(score)
-    
+
     try:
         aspireP = statistics.runComparisonStatistic(baseline_scores,exp_scores,probability_statistic)
     except Exception: aspireP = 'NA' ### Occurs when analyzing two groups with no variance
@@ -3533,11 +3531,11 @@ def stringListConvert(ls):
     ls2=[]
     for i in ls: ls2.append(str(i))
     return ls2
-    
+
 def analyzeJunctionSplicing(nonlog_NI_db):
     group_sizes = []; original_array_indices = permute_lists[0] ###p[0] is the original organization of the group samples prior to permutation
     for group in original_array_indices: group_sizes.append(len(group))
-        
+
     ### Used to restrict the analysis to a pre-selected set of probesets (e.g. those that have a specifc splicing pattern)
     if len(filtered_probeset_db)>0:
         temp_db={}
@@ -3546,7 +3544,7 @@ def analyzeJunctionSplicing(nonlog_NI_db):
             try: filtered_probeset_db[probeset]
             except KeyError: del nonlog_NI_db[probeset]
 
-    ### Used to the export relative individual adjusted probesets fold changes used for splicing index values   
+    ### Used to the export relative individual adjusted probesets fold changes used for splicing index values
     if export_NI_values == 'yes':
         global NIdata_export
         summary_output = root_dir+'AltResults/RawSpliceData/'+species+'/'+analysis_method+'/'+dataset_name[:-1]+'.txt'
@@ -3571,7 +3569,7 @@ def analyzeJunctionSplicing(nonlog_NI_db):
                     si_interim_group_db[group_index] = ratio_hash
                     group_index+=1
                 group1_ratios = si_interim_group_db[0]; group2_ratios = si_interim_group_db[1]
-                
+
                 ### Calculate and store simple expression summary stats
                 data_list1 = array_raw_group_values[probeset][0]; data_list2 = array_raw_group_values[probeset][1]
                 baseline_exp = statistics.avg(data_list1); experimental_exp = statistics.avg(data_list2); fold_change = experimental_exp - baseline_exp
@@ -3601,10 +3599,10 @@ def analyzeJunctionSplicing(nonlog_NI_db):
                 if analysis_method == 'linearregres': ###Convert out of log space
                     ls_concatenated = statistics.log_fold_conversion_fraction(ls_concatenated)
                 array_raw_group_values[probeset] = ls_concatenated
-            
+
     s = 0; t = 0; y = ''; denominator_events=0; excluded_probeset_db = {}
     splice_event_list=[]; splice_event_list_mx=[]; splice_event_list_non_mx=[]; event_mx_temp = []; permute_p_values={} #use this to exclude duplicate mx events
-           
+
     for affygene in alt_junction_db:
         if affygene in original_avg_const_exp_db:
             constit_exp1 = original_avg_const_exp_db[affygene][0]
@@ -3612,7 +3610,7 @@ def analyzeJunctionSplicing(nonlog_NI_db):
             ge_fold=constit_exp2-constit_exp1
             for event in alt_junction_db[affygene]:
                 if array_type == 'AltMouse':
-                    #event = [('ei', 'E16-E17'), ('ex', 'E16-E18')] 
+                    #event = [('ei', 'E16-E17'), ('ex', 'E16-E18')]
                     #critical_exon_db[affygene,tuple(critical_exons)] = [1,'E'+str(e1a),'E'+str(e2b)] --- affygene,tuple(event) == key, 1 indicates both are either up or down together
                     event_call = event[0][0] + '-' + event[1][0]
                     exon_set1 = event[0][1]; exon_set2 = event[1][1]
@@ -3640,17 +3638,17 @@ def analyzeJunctionSplicing(nonlog_NI_db):
                         print probeset1, probeset2
                         p1 = probeset_normIntensity_db[probeset1]
                         p2 = probeset_normIntensity_db[probeset2]
-                #if '|' in probeset1: print  
+                #if '|' in probeset1: print
                     pp1 = p1.Pval(); pp2 = p2.Pval()
-                    
+
                     baseline_ratio1 = p1.ConNIAvg()
                     experimental_ratio1 = p1.ExpNIAvg()
                     baseline_ratio2 = p2.ConNIAvg()
                     experimental_ratio2 = p2.ExpNIAvg()
-                    
+
                     ped1 = p1.ProbesetExprData()
                     ped2 = p2.ProbesetExprData()
-                                    
+
                     Rin = ''; Rex = ''
                     r = 0 ###Variable used to determine if we should take the absolute value of dI for mutually exlcusive events
                     if event_call == 'ei-ex': #means probeset1 is an exon inclusion and probeset2 is an exon exclusion
@@ -3692,7 +3690,7 @@ def analyzeJunctionSplicing(nonlog_NI_db):
                                 permute_p_values[(probeset1,probeset2)] = [aspireP, 'NA', 'NA', 'NA']
                             if r == 1: dI = abs(dI)  ###Occurs when event is mutually exclusive
                             #if abs(dI)>alt_exon_logfold_cutoff: print [dI],pp1,pp2,aspireP;kill
-                            
+
                             #print [affygene,dI,pp1,pp2,aspireP,event.CriticalExonSets(),probeset1,probeset2,alt_exon_logfold_cutoff,p_threshold]
                             if ((pp1<p_threshold or pp2<p_threshold) or pp1==1 or pp1=='NA') and abs(dI) > alt_exon_logfold_cutoff: ###Require that the splice event have a constitutive corrected p less than the user defined threshold
                                 ejd = ExonJunctionData(dI,probeset1,probeset2,pp1,pp2,y,event_call,critical_exon_list,affygene,ped1,ped2)
@@ -3732,7 +3730,7 @@ def analyzeJunctionSplicing(nonlog_NI_db):
     clearObjectsFromMemory(probeset_normIntensity_db)
     probeset_normIntensity_db={}; ### Potentially large memory object containing summary stats for all probesets
     statistics.adjustPermuteStats(permute_p_values)
-    summary_data_db['denominator_exp_events']=denominator_events    
+    summary_data_db['denominator_exp_events']=denominator_events
     print "Number of exon-events analyzed:", s
     print "Number of exon-events excluded:", t
     return splice_event_list, probeset_comp_db, permute_p_values, excluded_probeset_db
@@ -3778,9 +3776,9 @@ def furtherProcessJunctionScores(splice_event_list, probeset_comp_db, permute_p_
                 p_value_call=probability_statistic; permute_p_values = {}
 
     print len(splice_event_list), 'alternative events after subsequent filtering (optional)'
-    ### Get ExonJunction annotaitons            
+    ### Get ExonJunction annotaitons
     junction_splicing_annot_db = getJunctionSplicingAnnotations(probeset_comp_db)
-    
+
     regulated_exon_junction_db={}; new_splice_event_list=[]
     if filter_for_AS == 'yes': print "Filtering for evidence of Alternative Splicing"
     for (fold,ejd) in splice_event_list:
@@ -3818,7 +3816,7 @@ def furtherProcessJunctionScores(splice_event_list, probeset_comp_db, permute_p_
 
     try: clearObjectsFromMemory(alt_junction_db)
     except Exception: null=[]
-    
+
     return new_splice_event_list, p_value_call, permute_p_values, probeset_comp_db, regulated_exon_junction_db
 
 class SplicingScoreData:
@@ -3857,7 +3855,7 @@ class ExonJunctionData(SplicingScoreData):
         self._event_call = event_call; self._critical_exon_list = critical_exon_list; self._geneid = affygene
         self._method = analysis_method; self._normIntensityP = probeset1_p; self._normIntensityP2 = probeset2_p
         self.ped1 = ped1; self.ped2=ped2
-        
+
 class ExonData(SplicingScoreData):
     def __init__(self,splicing_index,probeset,critical_exon_list,geneid,group1_ratios,group2_ratios,normIntensityP,opposite_SI_log_mean):
         self._score = splicing_index; self._probeset1 = probeset; self._opposite_SI_log_mean = opposite_SI_log_mean
@@ -3878,7 +3876,7 @@ def getAllPossibleLinearRegressionScores(probeset1,probeset2,positions,group_siz
     ### Get Raw expression values for the two probests
     p1_exp = array_raw_group_values[probeset1]
     p2_exp = array_raw_group_values[probeset2]
-        
+
     all_possible_scores=[]; index1=0 ### Perform all possible pairwise comparisons between groups (not sure how this will work for 10+ groups)
     for (pos1a,pos2a) in positions:
         index2=0
@@ -3897,7 +3895,7 @@ def getAllPossibleLinearRegressionScores(probeset1,probeset2,positions,group_siz
     try: log_fold,index1,index2 = all_possible_scores[-1]
     except Exception: log_fold=0; index1=0; index2=0
     return log_fold, index1, index2
-    
+
 def getLinearRegressionScores(probeset1,probeset2,group_sizes):
     ### Get Raw expression values for the two probests
     p1_exp = array_raw_group_values[probeset1]
@@ -3929,7 +3927,7 @@ def getAllLinearRegressionScores(probeset1,probeset2,p1_g1,p2_g1,p1_g2,p2_g2,gro
             p2_g2_sample = p2_g2[index]
             log_f, rs = performLinearRegression(p1_g1,p2_g1,[p1_g2_sample],[p2_g2_sample])
             group2_scores.append(log_f); index+=1
-        
+
         try:
             linregressP = statistics.runComparisonStatistic(group1_scores,group2_scores,probability_statistic)
         except Exception:
@@ -3954,7 +3952,7 @@ def performLinearRegression(p1_g1,p2_g1,p1_g2,p2_g2):
         #print "Performing Linear Regression analysis using python specific methods."
         g1_slope = statistics.simpleLinRegress(p1_g1,p2_g1)
         g2_slope = statistics.simpleLinRegress(p1_g2,p2_g2)
-    
+
     log_fold = statistics.convert_to_log_fold(g2_slope/g1_slope)
     rsqrd = 'proceed'
     #if g1_rsqrd > 0 and g2_rsqrd > 0: rsqrd = 'proceed'
@@ -3975,7 +3973,7 @@ def permuteLinearRegression(probeset1,probeset2,p):
     else: ###Uses a basic least squared method
         g1_slope = statistics.simpleLinRegress(p1_g1,p2_g1)
         g2_slope = statistics.simpleLinRegress(p1_g2,p2_g2)
-        
+
     log_fold = statistics.convert_to_log_fold(g2_slope/g1_slope)
     return log_fold
 
@@ -4011,16 +4009,16 @@ def permuteSplicingScores(splice_event_list):
             p_val, pos_permute, total_permute, greater_than_true_permute = statistics.permute_p(p_splice_val_dist,new_ref_splice_val,len(permute_lists))
             #print p_val,ref_splice_val, pos_permute, total_permute, greater_than_true_permute,p_splice_val_dist[-3:];kill
             ###When two groups are of equal size, there will be 2 pos_permutes rather than 1
-            if len(permute_lists[0][0]) == len(permute_lists[0][1]): greater_than_true_permute = (pos_permute/2) - 1 #size of the two groups are equal  
+            if len(permute_lists[0][0]) == len(permute_lists[0][1]): greater_than_true_permute = (pos_permute/2) - 1 #size of the two groups are equal
             else:greater_than_true_permute = (pos_permute) - 1
             if analysis_method == 'linearregres': greater_than_true_permute = (pos_permute) - 1 ###since this is a one sided test, unlike ASPIRE
-                
+
             ###Below equation is fine if the population is large
             permute_p_values[(probeset1,probeset2)] = [p_val, pos_permute, total_permute, greater_than_true_permute]
-            ###Remove non-significant linear regression results    
+            ###Remove non-significant linear regression results
             if analysis_method == 'linearregres':
                 if p_val <= permute_p_threshold or greater_than_true_permute < 2: splice_event_list2.append((score,x)) ###<= since many p=0.05
-    print "Number of permutation p filtered splice event:",len(splice_event_list2)           
+    print "Number of permutation p filtered splice event:",len(splice_event_list2)
     if len(permute_p_values)>0: p_value_call = 'permuted_aspire_p-value'
     if analysis_method == 'linearregres': splice_event_list = splice_event_list2
     return splice_event_list, p_value_call, permute_p_values
@@ -4058,7 +4056,7 @@ def permute_samples(a,p):
     for p_index in p[1]:
         experimental.append(a[p_index])
     return baseline, experimental
-    
+
 def permute_dI(all_samples,p):
     baseline, experimental = permute_samples(all_samples,p)
     #if get_non_log_avg == 'no':
@@ -4066,7 +4064,7 @@ def permute_dI(all_samples,p):
     gb = statistics.log_fold_conversion_fraction(gb); ge = statistics.log_fold_conversion_fraction(ge)
     #else:
     #baseline = statistics.log_fold_conversion_fraction(baseline); experimental = statistics.log_fold_conversion_fraction(experimental)
-    #gb = statistics.avg(baseline); ge = statistics.avg(experimental)  ###Group avg baseline, group avg experimental value      
+    #gb = statistics.avg(baseline); ge = statistics.avg(experimental)  ###Group avg baseline, group avg experimental value
     return gb,ge
 
 def format_exon_functional_attributes(affygene,critical_probeset_list,functional_attribute_db,up_exon_list,down_exon_list,protein_length_list):
@@ -4094,13 +4092,13 @@ def format_exon_functional_attributes(affygene,critical_probeset_list,functional
                 if exon in up_exon_list:
                     ### design logic to determine whether up or down regulation promotes the functional change (e.g. NMD)
                     if 'ref' in functional_attribute:
-                        new_functional_attribute = '(~)'+functional_attribute 
+                        new_functional_attribute = '(~)'+functional_attribute
                         data_tuple = new_functional_attribute,exon
                     elif call == '+' or call == '~':
-                        new_functional_attribute = '(+)'+functional_attribute 
+                        new_functional_attribute = '(+)'+functional_attribute
                         data_tuple = new_functional_attribute,exon
                     elif call == '-':
-                        new_functional_attribute = '(-)'+functional_attribute 
+                        new_functional_attribute = '(-)'+functional_attribute
                         data_tuple = new_functional_attribute,exon
                     if 'AA:' in functional_attribute and '?' not in functional_attribute:
                         functional_attribute_temp = functional_attribute[3:]
@@ -4113,7 +4111,7 @@ def format_exon_functional_attributes(affygene,critical_probeset_list,functional
                         protein_length_list.append([val1,val2])
                 elif exon in down_exon_list:
                     if 'ref' in functional_attribute:
-                        new_functional_attribute = '(~)'+functional_attribute 
+                        new_functional_attribute = '(~)'+functional_attribute
                         data_tuple = new_functional_attribute,exon
                     elif call == '+' or call == '~':
                         new_functional_attribute = '(-)'+functional_attribute
@@ -4169,17 +4167,17 @@ def grab_summary_dataset_annotations(functional_attribute_db,comparison_db,inclu
         try: cp_db[affygene].append(annotation)
         except KeyError: cp_db[affygene]= [annotation]
 
-    functional_attribute_db_exclude = {}            
+    functional_attribute_db_exclude = {}
     for affygene in fa_db:
         if affygene in cp_db:
             for annotation2 in cp_db[affygene]:
                 if ('trunc' in annotation2) or ('frag' in annotation2) or ('NMDs' in annotation2):
                     try: functional_attribute_db_exclude[affygene].append(annotation2)
                     except KeyError: functional_attribute_db_exclude[affygene] = [annotation2]
-    functional_annotation_db = {}                    
+    functional_annotation_db = {}
     for (affygene,annotation) in functional_attribute_db:
         ### if we wish to filter the 1st database based on protein length changes
-        if affygene not in functional_attribute_db_exclude: 
+        if affygene not in functional_attribute_db_exclude:
             try: functional_annotation_db[annotation] += 1
             except KeyError: functional_annotation_db[annotation] = 1
         elif include_truncation_results_specifically == 'yes':
@@ -4198,7 +4196,7 @@ def grab_summary_dataset_annotations(functional_attribute_db,comparison_db,inclu
 
 def reorganize_attribute_entries(attribute_db1,build_attribute_direction_databases):
     attribute_db2 = {}; inclusion_attributes_hit_count={}; exclusion_attributes_hit_count={}
-    genes_with_inclusion_attributes={}; genes_with_exclusion_attributes={}; 
+    genes_with_inclusion_attributes={}; genes_with_exclusion_attributes={};
     ###This database has unique gene, attribute information.  No attribute will now be represented more than once per gene
     for key in attribute_db1:
         ###Make gene the key and attribute (functional elements or protein information), along with the associated exons the values
@@ -4221,7 +4219,7 @@ def reorganize_attribute_entries(attribute_db1,build_attribute_direction_databas
 
     inclusion_attributes_hit_count = eliminate_redundant_dict_values(inclusion_attributes_hit_count)
     exclusion_attributes_hit_count = eliminate_redundant_dict_values(exclusion_attributes_hit_count)
-    
+
     """for key in inclusion_attributes_hit_count:
         inclusion_attributes_hit_count[key] = len(inclusion_attributes_hit_count[key])
     for key in exclusion_attributes_hit_count:
@@ -4246,7 +4244,7 @@ def add_a_space(string):
 
 def convertToLog2(data_list):
     return map(lambda x: math.log(float(x), 2), data_list)
-    
+
 def addGlobalFudgeFactor(data_list,data_type):
     new_list = []
     if data_type == 'log':
@@ -4274,7 +4272,7 @@ def copyDirectoryPDFs(root_dir,AS='AS'):
         if 'AltResult' in dir and AS!='AS': proceed=False
         if proceed:
             try: shutil.copyfile(filepath('Documentation/DirectoryDescription/'+file), filepath(root_dir+dir))
-            except Exception: pass  
+            except Exception: pass
 
 def restrictProbesets(dataset_name):
     ### Take a file with probesets and only perform the splicing-analysis on these (e.g. those already identified from a previous run with a specific pattern)
@@ -4310,13 +4308,13 @@ def RunAltAnalyze():
       import_dir = root_dir+'AltExpression/JunctionArray/'+species+'/'
   else:
       import_dir = root_dir+'AltExpression/'+array_type+'/'+species+'/'
-  
-  #if analysis_method == 'ASPIRE' or analysis_method == 'linearregres' or analysis_method == 'splicing-index':    
+
+  #if analysis_method == 'ASPIRE' or analysis_method == 'linearregres' or analysis_method == 'splicing-index':
   if array_type != 'AltMouse': gene_annotation_file = "AltDatabase/ensembl/"+species+"/"+species+"_Ensembl-annotations.txt"
   else: gene_annotation_file = "AltDatabase/"+species+"/"+array_type+"/"+array_type+"_gene_annotations.txt"
   annotate_db = ExonAnalyze_module.import_annotations(gene_annotation_file,array_type)
 
-  ###Import probe-level associations    
+  ###Import probe-level associations
   exon_db={}; filtered_arrayids={};filter_status='no'
   try: constitutive_probeset_db,exon_db,genes_being_analyzed = importSplicingAnnotationDatabase(probeset_annotations_file,array_type,filtered_arrayids,filter_status)
   except IOError:
@@ -4327,7 +4325,7 @@ def RunAltAnalyze():
         badExit()
   run=0
   ### Occurs when analyzing multiple conditions rather than performing a simple pair-wise comparison
-  if run_from_scratch == 'Annotate External Results': import_dir = root_dir 
+  if run_from_scratch == 'Annotate External Results': import_dir = root_dir
   elif analyze_all_conditions == 'all groups':
       import_dir = string.replace(import_dir,'AltExpression','AltExpression/FullDatasets')
       if array_type == 'AltMouse':
@@ -4366,7 +4364,7 @@ def RunAltAnalyze():
             except Exception:
                 import_dir = root_dir
                 dir_list = read_directory(root_dir) ### Occurs when reading in an AltAnalyze filtered file under certain conditions
-        except Exception: 
+        except Exception:
             print_out = 'The expression files were not found. Please make\nsure you selected the correct species and array type.\n\nselected species: '+species+'\nselected array type: '+array_type+'\nselected directory:'+import_dir
             try: UI.WarningWindow(print_out,'Exit')
             except Exception: print print_out
@@ -4376,7 +4374,7 @@ def RunAltAnalyze():
 
   ### Capture the corresponding files in the residual dir to make sure these files exist for all comparisons - won't if FIRMA was run on some files
   if analysis_method == 'FIRMA':
-      try: 
+      try:
           residual_dir = root_dir+'AltExpression/FIRMA/residuals/'+array_type+'/'+species+'/'
           residuals_dirlist = read_directory(residual_dir)
       except Exception: null=[]
@@ -4386,7 +4384,7 @@ def RunAltAnalyze():
       except Exception: null=[]
       dir_list_verified=[]
       for file in residuals_dirlist:
-          for filename in dir_list:    
+          for filename in dir_list:
               if file[:-4] in filename: dir_list_verified.append(filename)
       dir_list = unique.unique(dir_list_verified)
 
@@ -4421,13 +4419,13 @@ def RunAltAnalyze():
     else: dataset_dir = import_dir +'/'+ altanalyze_input
     dataset_name = altanalyze_input[:-4] + '-'
     print "Beginning to process",dataset_name[0:-1]
-    
+
     ### If the user want's to restrict the analysis to preselected probesets (e.g., limma or FIRMA analysis selected)
     global filtered_probeset_db; filtered_probeset_db={}
     try: filtered_probeset_db = restrictProbesets(dataset_name)
     except Exception: null=[]
 
-    if run_from_scratch != 'Annotate External Results':    
+    if run_from_scratch != 'Annotate External Results':
         ###Import expression data and stats and filter the expression data based on fold and p-value OR expression threshold
         try: conditions,adj_fold_dbase,nonlog_NI_db,dataset_name,gene_expression_diff_db,midas_db,ex_db,si_db = performExpressionAnalysis(dataset_dir,constitutive_probeset_db,exon_db,annotate_db,dataset_name)
         except IOError:
@@ -4444,7 +4442,7 @@ def RunAltAnalyze():
     ###Run Analysis
     summary_results_db, summary_results_db2, aspire_output, aspire_output_gene, number_events_analyzed = splicingAnalysisAlgorithms(nonlog_NI_db,adj_fold_dbase,dataset_name,gene_expression_diff_db,exon_db,ex_db,si_db,dataset_dir)
     aspire_output_list.append(aspire_output); aspire_output_gene_list.append(aspire_output_gene)
-    
+
     try: clearObjectsFromMemory(exon_db); clearObjectsFromMemory(constitutive_probeset_db); constitutive_probeset_db=[]
     except Exception: null=[]
     try: clearObjectsFromMemory(last_exon_region_db);last_exon_region_db=[]
@@ -4458,7 +4456,7 @@ def RunAltAnalyze():
 
     try: run+=1
     except Exception: run = 1
-    
+
   if run>0: ###run = 0 if no filtered expression data present
       try: return summary_results_db, aspire_output_gene_list, number_events_analyzed
       except Exception:
@@ -4489,7 +4487,7 @@ def defineEmptyExpressionVars(exon_db):
     global midas_db; midas_db = {}; global max_replicates; global equal_replicates; max_replicates=0; equal_replicates=0
     for probeset in exon_db: fold_dbase[probeset]='',''
     original_fold_dbase = fold_dbase
-    
+
 def universalPrintFunction(print_items):
     log_report = open(log_file,'a')
     for item in print_items:
@@ -4497,7 +4495,7 @@ def universalPrintFunction(print_items):
             log_report.write(item+'\n')
         else: print item
     log_report.close()
-    
+
 class StatusWindow:
     def __init__(self,root,expr_var,alt_var,goelite_var,additional_var,exp_file_location_db):
             root.title('AltAnalyze version 2.0.9.3 beta')
@@ -4510,10 +4508,10 @@ class StatusWindow:
                     usehullsize = 1, hull_width = width, hull_height = height)
             self.sf.pack(padx = 5, pady = 1, fill = 'both', expand = 1)
             self.frame = self.sf.interior()
-            
+
             group = PmwFreeze.Group(self.sf.interior(),tag_text = 'Output')
             group.pack(fill = 'both', expand = 1, padx = 10, pady = 0)
-                
+
             Label(group.interior(),width=190,height=552,justify=LEFT, bg='black', fg = 'white',anchor=NW,padx = 5,pady = 5, textvariable=statusVar).pack(fill=X,expand=Y)
 
             status = StringVarFile(statusVar,root) ### Likely captures the stdout
@@ -4545,13 +4543,13 @@ def exportComparisonSummary(dataset_name,summary_data_dbase,return_type):
     d = summary_data_dbase['gene_assayed']+':\tAll genes examined'; result_list.append(d)
     d = summary_data_dbase['denominator_exp_genes']+':\tExpressed genes examined for AS'; result_list.append(d)
 
-    if explicit_data_type == 'exon-only': 
+    if explicit_data_type == 'exon-only':
         d = summary_data_dbase['alt_events']+':\tAlternatively regulated probesets'; result_list.append(d)
-        d = summary_data_dbase['denominator_exp_events']+':\tExpressed probesets examined'; result_list.append(d)  
+        d = summary_data_dbase['denominator_exp_events']+':\tExpressed probesets examined'; result_list.append(d)
     elif (array_type == 'AltMouse' or array_type == 'junction' or array_type == 'RNASeq') and (explicit_data_type == 'null' or return_type == 'print'):
         d = summary_data_dbase['alt_events']+':\tAlternatively regulated junction-pairs'; result_list.append(d)
         d = summary_data_dbase['denominator_exp_events']+':\tExpressed junction-pairs examined'; result_list.append(d)
-    else: 
+    else:
         d = summary_data_dbase['alt_events']+':\tAlternatively regulated probesets'; result_list.append(d)
         d = summary_data_dbase['denominator_exp_events']+':\tExpressed probesets examined'; result_list.append(d)
     d = summary_data_dbase['alt_genes']+':\tAlternatively regulated genes (ARGs)'; result_list.append(d)
@@ -4564,13 +4562,13 @@ def exportComparisonSummary(dataset_name,summary_data_dbase,return_type):
         elif array_type == 'RNASeq': d = string.replace(d,'probeset','junction')
         result_list2.append(d)
     result_list = result_list2
-    
+
     if return_type == 'log':
         for d in result_list: log_report.write(d+'\n')
         log_report.write('\n')
     log_report.close()
     return result_list
-        
+
 class SummaryResultsWindow:
     def __init__(self,tl,analysis_type,output_dir,dataset_name,output_type,summary_data_dbase):
         def showLink(event):
@@ -4592,7 +4590,7 @@ class SummaryResultsWindow:
             except Exception:
                 null=[] ### anomalous error
 
-        self.emergency_exit = False            
+        self.emergency_exit = False
         self.LINKS = []
         self.tl = tl
         self.tl.title('AltAnalyze version 2.0.9 beta')
@@ -4600,19 +4598,19 @@ class SummaryResultsWindow:
 
         filename = 'Config/icon.gif'
         fn=filepath(filename); img = PhotoImage(file=fn)
-        can = Canvas(tl); can.pack(side='top'); can.config(width=img.width(), height=img.height())        
+        can = Canvas(tl); can.pack(side='top'); can.config(width=img.width(), height=img.height())
         can.create_image(2, 2, image=img, anchor=NW)
         use_scroll = 'yes'
-    
+
         try: runGOElite = run_GOElite
         except Exception: runGOElite='decide_later'
-  
+
         if 'QC' in summary_data_dbase:
             graphic_links = summary_data_dbase['QC'] ### contains hyperlinks to QC and Clustering plots
             if len(graphic_links)==0: del summary_data_dbase['QC'] ### This can be added if an analysis fails
         else:
             graphic_links = []
-            
+
         label_text_str = 'AltAnalyze Result Summary'; height = 150; width = 500
         if analysis_type == 'AS' or 'QC' in summary_data_dbase: height = 330
         if analysis_type == 'AS' and 'QC' in summary_data_dbase: height = 330
@@ -4623,24 +4621,24 @@ class SummaryResultsWindow:
         self.sf.pack(padx = 5, pady = 1, fill = 'both', expand = 1)
         self.frame = self.sf.interior()
 
-        txt=Text(self.frame,bg='gray',width=150, height=80)              
+        txt=Text(self.frame,bg='gray',width=150, height=80)
         txt.pack(expand=True, fill="both")
         #txt.insert(END, 'Primary Analysis Finished....\n')
         txt.insert(END, 'Results saved to:\n'+output_dir+'\n')
-        
+
         f = Font(family="System", size=12, weight="bold")
         txt.tag_config("font", font=f)
         i=0
-        
+
         copyDirectoryPDFs(output_dir,AS=analysis_type)
         if analysis_type == 'AS':
             txt.insert(END, '\n')
-            result_list = exportComparisonSummary(dataset_name,summary_data_dbase,'print')        
+            result_list = exportComparisonSummary(dataset_name,summary_data_dbase,'print')
             for d in result_list: txt.insert(END, d+'\n')
-                
+
         if 'QC' in summary_data_dbase and len(graphic_links)>0:
             txt.insert(END, '\nQC and Expression Clustering Plots',"font")
-            txt.insert(END, '\n\n  1) ')         
+            txt.insert(END, '\n\n  1) ')
             for (name,file_dir) in graphic_links:
                 txt.insert(END, name, ('link', str(i)))
                 if len(graphic_links) > (i+1):
@@ -4661,12 +4659,12 @@ class SummaryResultsWindow:
             txt.insert(END, '\n\nView all pathway enrichment results in the folder ')
             txt.insert(END, 'GO-Elite',('link', str(i))); i+=1
             self.LINKS.append(output_dir+'GO-Elite/')
-            
+
         if analysis_type == 'AS':
             txt.insert(END, '\n\nView all splicing plots in the folder ')
             txt.insert(END, 'ExonPlots',('link', str(i))); i+=1
-            self.LINKS.append(output_dir+'ExonPlots/') 
-            
+            self.LINKS.append(output_dir+'ExonPlots/')
+
         txt.tag_config('link', foreground="blue", underline = 1)
         txt.tag_bind('link', '<Button-1>', showLink)
         txt.insert(END, '\n\n')
@@ -4693,7 +4691,7 @@ class SummaryResultsWindow:
         what_next.pack(side = 'right', padx = 5, pady = 5)
         quit_buttonTL = Button(tl,text='Close View', command=self.close)
         quit_buttonTL.pack(side = 'right', padx = 5, pady = 5)
-        
+
         continue_to_next_win = Button(text = 'Continue', command = self.continue_win)
         continue_to_next_win.pack(side = 'right', padx = 10, pady = 10)
         quit_button = Button(root,text='Quit', command=self.quit)
@@ -4725,11 +4723,11 @@ class SummaryResultsWindow:
             UI.getUpdatedParameters(array_type,species,'Process Expression file',output_dir)
             sys.exit() ### required when opening PNG files on Windows to continue (not sure why)
             #sys.exitfunc()
- 
+
     def tldeleteWindow(self):
         try: self.tl.quit(); self.tl.destroy()
         except Exception: self.tl.destroy()
-        
+
     def deleteTLWindow(self):
         self.emergency_exit = True
         try:  self._tls.quit(); self._tls.destroy()
@@ -4776,7 +4774,7 @@ class SummaryResultsWindow:
             try: os.startfile('"'+self.output_dir+'"')
             except Exception:  os.system('open "'+dir+'"')
         elif 'darwin' in sys.platform: os.system('open "'+dir+'"')
-        elif 'linux' in sys.platform: os.system('xdg-open "'+dir+'/"')   
+        elif 'linux' in sys.platform: os.system('xdg-open "'+dir+'/"')
     def DGlinkout(self):
         try:
             altanalyze_path = filepath('') ### Find AltAnalye's path
@@ -4831,8 +4829,8 @@ class SummaryResultsWindow:
         can.pack(fill=BOTH, padx = 0, pady = 0)
         w = img.width()
         h = height=img.height()
-        
-        can.config(width=w, height=h)        
+
+        can.config(width=w, height=h)
         can.create_image(2, 2, image=img, anchor=NW)
         tlx.mainloop()
 
@@ -4841,7 +4839,7 @@ class SummaryResultsWindow:
             try: os.startfile('"'+png_file_dir+'"')
             except Exception:  os.system('open "'+png_file_dir+'"')
         elif 'darwin' in sys.platform: os.system('open "'+png_file_dir+'"')
-        elif 'linux' in sys.platform: os.system('xdg-open "'+png_file_dir+'"')   
+        elif 'linux' in sys.platform: os.system('xdg-open "'+png_file_dir+'"')
     def DisplayPlots(self,file_location):
         """ Native Tkinter method - Displays a gif file in a standard TopLevel window (nothing fancy) """
         tls = Toplevel(); self._tls = tls; nulls = '\t\t\t\t'; tls.title('AltAnalyze Plot Visualization')
@@ -4852,7 +4850,7 @@ class SummaryResultsWindow:
         group = PmwFreeze.Group(self.sf.interior(),tag_text = file_location)
         group.pack(fill = 'both', expand = 1, padx = 10, pady = 0)
         img = PhotoImage(file=filepath(file_location))
-        can = Canvas(group.interior()); can.pack(side='left',padx = 10, pady = 20); can.config(width=img.width(), height=img.height())        
+        can = Canvas(group.interior()); can.pack(side='left',padx = 10, pady = 20); can.config(width=img.width(), height=img.height())
         can.create_image(2, 2, image=img, anchor=NW)
         tls.mainloop()
 
@@ -4872,13 +4870,13 @@ class SummaryResultsWindow:
             group = PmwFreeze.Group(self.sf.interior(),tag_text = 'Options')
             group.pack(fill = 'both', expand = 1, padx = 10, pady = 0)
             filename = 'Config/icon.gif'; fn=filepath(filename); img = PhotoImage(file=fn)
-            can = Canvas(group.interior()); can.pack(side='left',padx = 10, pady = 20); can.config(width=img.width(), height=img.height())        
+            can = Canvas(group.interior()); can.pack(side='left',padx = 10, pady = 20); can.config(width=img.width(), height=img.height())
             can.create_image(2, 2, image=img, anchor=NW)
             l1 = Label(group.interior(), text=nulls);  l1.pack(side = 'bottom')
-            text_button2 = Button(group.interior(), text=self.online_help, command=self.openOnlineHelp); text_button2.pack(side = 'top', padx = 5, pady = 5) 
+            text_button2 = Button(group.interior(), text=self.online_help, command=self.openOnlineHelp); text_button2.pack(side = 'top', padx = 5, pady = 5)
             try: text_button = Button(group.interior(), text=self.pdf_help, command=self.openPDFHelp); text_button.pack(side = 'top', padx = 5, pady = 5)
             except Exception: text_button = Button(group.interior(), text=self.pdf_help, command=self.openPDFHelp); text_button.pack(side = 'top', padx = 5, pady = 5)
-            text_button3 = Button(group.interior(), text='No Thanks', command=self.skipHelp); text_button3.pack(side = 'top', padx = 5, pady = 5) 
+            text_button3 = Button(group.interior(), text='No Thanks', command=self.skipHelp); text_button3.pack(side = 'top', padx = 5, pady = 5)
             c = Checkbutton(group.interior(), text = "Apply these settings each time", command=self.setHelpConfig); c.pack(side = 'bottom', padx = 5, pady = 0)
             tls.mainloop()
             try: tls.destroy()
@@ -4906,7 +4904,7 @@ class SummaryResultsWindow:
             group = PmwFreeze.Group(self.sf.interior(),tag_text = 'Options')
             group.pack(fill = 'both', expand = 1, padx = 10, pady = 0)
             filename = 'Config/cyto-logo-smaller.gif'; fn=filepath(filename); img = PhotoImage(file=fn)
-            can = Canvas(group.interior()); can.pack(side='left',padx = 10, pady = 5); can.config(width=img.width(), height=img.height())        
+            can = Canvas(group.interior()); can.pack(side='left',padx = 10, pady = 5); can.config(width=img.width(), height=img.height())
             can.create_image(2, 2, image=img, anchor=NW)
             #"""
             self.local_cytoscape = 'AltAnalyze Bundled Version'; self.custom_cytoscape = 'Previously Installed Version'
@@ -4917,7 +4915,7 @@ class SummaryResultsWindow:
             l1 = Label(group.interior(), text=nulls);  l1.pack(side = 'bottom')
             l2 = Label(group.interior(), text='Note: Cytoscape can take up-to a minute to initalize', fg="red");  l2.pack(side = 'top', padx = 5, pady = 0)
             """
-            text_button2 = Button(group.interior(), text=self.local_cytoscape, command=self.DGlinkout); text_button2.pack(padx = 5, pady = 5) 
+            text_button2 = Button(group.interior(), text=self.local_cytoscape, command=self.DGlinkout); text_button2.pack(padx = 5, pady = 5)
             try: text_button = Button(group.interior(), text=self.custom_cytoscape, command=self.getPath); text_button.pack(padx = 5, pady = 5)
             except Exception: text_button = Button(group.interior(), text=self.custom_cytoscape, command=self.getPath); text_button.pack(padx = 5, pady = 5)
             l2 = Label(group.interior(), text='Note: Cytoscape can take up-to a minute to initalize', fg="blue");  l2.pack(side = 'bottom', padx = 5, pady = 0)
@@ -4938,7 +4936,7 @@ class SummaryResultsWindow:
                 elif 'linux' in sys.platform: application_name = 'Cytoscape'
                 try: openCytoscape(altanalyze_path,application_dir,application_name)
                 except Exception: null=[]
-        
+
     def setCytoscapeConfig(self):
         config_db={}; config_db['cytoscape'] = 'hide_selection_option'
         UI.exportConfigFile(config_db)
@@ -4946,7 +4944,7 @@ class SummaryResultsWindow:
     def setHelpConfig(self):
         config_db={}; config_db['help'] = 'hide_selection_option'
         UI.exportConfigFile(config_db)
-        
+
     def getPath(self):
         file_location_defaults = UI.importDefaultFileLocations()
         if os.name == 'nt': parent_dir = 'C:/Program Files'; application_dir = 'Cytoscape_v'; application_name = 'Cytoscape.exe'
@@ -4957,14 +4955,14 @@ class SummaryResultsWindow:
             self.default_dir = string.replace(self.default_dir,'//','/')
             self.default_dir = string.replace(self.default_dir,'\\','/')
             self.default_dir = string.join(string.split(self.default_dir,'/')[:-1],'/')
-        except Exception: 
-            dir = FindDir(parent_dir,application_dir); dir = filepath(parent_dir+'/'+dir) 
+        except Exception:
+            dir = FindDir(parent_dir,application_dir); dir = filepath(parent_dir+'/'+dir)
             self.default_dir = filepath(parent_dir)
         try: dirPath = tkFileDialog.askdirectory(parent=self._tls,initialdir=self.default_dir)
-        except Exception: 
+        except Exception:
             self.default_dir = ''
             try: dirPath = tkFileDialog.askdirectory(parent=self._tls,initialdir=self.default_dir)
-            except Exception: 
+            except Exception:
                 try: dirPath = tkFileDialog.askdirectory(parent=self._tls)
                 except Exception: dirPath=''
         try:
@@ -4983,11 +4981,11 @@ class SummaryResultsWindow:
                     os.system('java -Dswing.aatext=true -Xss5M -Xmx512M -jar '+jar_path+' '+main_path+'  -p '+plugins_path+' &')
                     print 'Cytoscape jar opened:',jar_path
                 except Exception:
-                    print 'OS command to open Java failed.'      
+                    print 'OS command to open Java failed.'
                     try: openFile(app_dir2); print 'Cytoscape opened:',app_dir2
                     except Exception: openFile(app_dir)
             else: openFile(app_dir)
-    
+
             try: file_location_defaults['CytoscapeDir'].SetLocation(app_dir)
             except Exception:
                 fl = UI.FileLocationData('', app_dir, 'all')
@@ -5028,7 +5026,7 @@ class SummaryResultsWindow:
             try: os.startfile('"'+self.pdf_file+'"')
             except Exception:  os.system('open "'+self.pdf_file+'"')
         elif 'darwin' in sys.platform: os.system('open "'+self.pdf_file+'"')
-        elif 'linux' in sys.platform: os.system('xdg-open "'+self.pdf_file+'"')   
+        elif 'linux' in sys.platform: os.system('xdg-open "'+self.pdf_file+'"')
         try: self._tls.destroy()
         except Exception: None
     def quit(self):
@@ -5038,7 +5036,7 @@ class SummaryResultsWindow:
     def close(self):
         #self.tl.quit()   #### This was causing multiple errors in 2.0.7 - evaluate more!
         self.tl.destroy()
-                
+
 class StringVarFile:
     def __init__(self,stringVar,window):
         self.__newline = 0; self.__stringvar = stringVar; self.__window = window
@@ -5055,11 +5053,11 @@ class StringVarFile:
                     new = new+c
             self.set(new)
         except Exception: pass
-    def set(self,s): self.__stringvar.set(s); self.__window.update()   
+    def set(self,s): self.__stringvar.set(s); self.__window.update()
     def get(self): return self.__stringvar.get()
     def flush(self):
         pass
-            
+
 def timestamp():
     import datetime
     today = str(datetime.date.today()); today = string.split(today,'-'); today = today[0]+''+today[1]+''+today[2]
@@ -5074,7 +5072,7 @@ def callWXPython():
     import AltAnalyzeViewer
     app = wx.App(False)
     AltAnalyzeViewer.remoteViewer(app)
-    
+
 def AltAnalyzeSetup(skip_intro):
     global apt_location; global root_dir;global log_file; global summary_data_db; summary_data_db={}; reload(UI)
     global probability_statistic; global commandLineMode; commandLineMode = 'no'
@@ -5113,15 +5111,15 @@ def AltAnalyzeSetup(skip_intro):
         if 'SystemExit' not in str(traceback.format_exc()):
             expr_var, alt_var, additional_var, goelite_var, exp_file_location_db = UI.getUserParameters('yes')
         else: sys.exit()"""
-        
+
     for dataset in exp_file_location_db:
         fl = exp_file_location_db[dataset]
         apt_location = fl.APTLocation()
         root_dir = fl.RootDir()
         try: probability_statistic = fl.ProbabilityStatistic()
         except Exception: probability_statistic = 'unpaired t-test'
-    
-    time_stamp = timestamp()    
+
+    time_stamp = timestamp()
     log_file = filepath(root_dir+'AltAnalyze_report-'+time_stamp+'.log')
     log_report = open(log_file,'w'); log_report.close()
     if use_Tkinter == 'yes' and debug_mode == 'no':
@@ -5138,8 +5136,8 @@ def AltAnalyzeSetup(skip_intro):
 
 def badExit():
         print "\n...exiting AltAnalyze due to unexpected error"
-        try: 
-            time_stamp = timestamp()    
+        try:
+            time_stamp = timestamp()
             print_out = "Unknown error encountered during data processing.\nPlease see logfile in:\n\n"+log_file+"\nand report to genmapp@gladstone.ucsf.edu."
             try:
                 if len(log_file)>0:
@@ -5156,11 +5154,11 @@ def badExit():
         except Exception: sys.exit()
         sys.exit()
         kill
-            
+
 def AltAnalyzeMain(expr_var,alt_var,goelite_var,additional_var,exp_file_location_db,root):
   ### Hard-coded defaults
   w = 'Agilent'; x = 'Affymetrix'; y = 'Ensembl'; z = 'any'; data_source = y; constitutive_source = z; manufacturer = x ### Constitutive source, is only really paid attention to if Ensembl, otherwise Affymetrix is used (even if default)
-  ### Get default options for ExpressionBuilder and AltAnalyze    
+  ### Get default options for ExpressionBuilder and AltAnalyze
   start_time = time.time()
   test_goelite = 'no'; test_results_pannel = 'no'
 
@@ -5169,19 +5167,19 @@ def AltAnalyzeMain(expr_var,alt_var,goelite_var,additional_var,exp_file_location
   global permute_p_threshold; global perform_permutation_analysis; global export_NI_values
   global run_MiDAS; global analyze_functional_attributes;  global microRNA_prediction_method
   global calculate_normIntensity_p; global pathway_permutations; global avg_all_for_ss; global analyze_all_conditions
-  global remove_intronic_junctions 
+  global remove_intronic_junctions
 
   global agglomerate_inclusion_probesets; global expression_threshold; global factor_out_expression_changes
   global only_include_constitutive_containing_genes; global remove_transcriptional_regulated_genes; global add_exons_to_annotations
   global exclude_protein_details; global filter_for_AS; global use_direct_domain_alignments_only; global run_from_scratch
   global explicit_data_type; explicit_data_type = 'null'
   global altanalyze_files; altanalyze_files = []
-  
+
   species,array_type,manufacturer,constitutive_source,dabg_p,raw_expression_threshold,avg_all_for_ss,expression_data_format,include_raw_data, run_from_scratch, perform_alt_analysis = expr_var
   analysis_method,p_threshold,filter_probeset_types,alt_exon_fold_variable,gene_expression_cutoff,remove_intronic_junctions,permute_p_threshold,perform_permutation_analysis, export_NI_values, analyze_all_conditions = alt_var
   calculate_normIntensity_p, run_MiDAS, use_direct_domain_alignments_only, microRNA_prediction_method, filter_for_AS, additional_algorithms = additional_var
   ge_fold_cutoffs,ge_pvalue_cutoffs,ge_ptype,filter_method,z_threshold,p_val_threshold,change_threshold,resources_to_analyze,pathway_permutations,mod,returnPathways = goelite_var
-  
+
   original_remove_intronic_junctions = remove_intronic_junctions
   if run_from_scratch == 'Annotate External Results': analysis_method = 'external'
   if returnPathways == 'no' or returnPathways == 'None':
@@ -5204,19 +5202,19 @@ def AltAnalyzeMain(expr_var,alt_var,goelite_var,additional_var,exp_file_location
         if fl.excludeLowExpressionExons(): excludeLowExpExons = 'yes'
         else: excludeLowExpExons = 'no'
     except Exception: excludeLowExpExons = 'no'
-    
+
     if test_goelite == 'yes': ### It can be difficult to get error warnings from GO-Elite, unless run here
       results_dir = filepath(fl.RootDir())
       elite_input_dirs = ['AltExonConfirmed','AltExon','regulated','upregulated','downregulated'] ### Run GO-Elite multiple times to ensure heatmaps are useful and to better organize results
       for elite_dir in elite_input_dirs:
            file_dirs = results_dir+'GO-Elite/'+elite_dir,results_dir+'GO-Elite/denominator',results_dir+'GO-Elite/'+elite_dir
            variables = species,mod,pathway_permutations,filter_method,z_threshold,p_val_threshold,change_threshold,resources_to_analyze,returnPathways,file_dirs,root
-           GO_Elite.remoteAnalysis(variables,'non-UI',Multi=mlp) 
+           GO_Elite.remoteAnalysis(variables,'non-UI',Multi=mlp)
 
   global perform_element_permutation_analysis; global permutations
   perform_element_permutation_analysis = 'yes'; permutations = 2000
   analyze_functional_attributes = 'yes' ### Do this by default (shouldn't substantially increase runtime)
-  
+
   if run_from_scratch != 'Annotate External Results' and (array_type != "3'array" and array_type!='RNASeq'):
       if run_from_scratch !='Process AltAnalyze filtered':
           try: raw_expression_threshold = float(raw_expression_threshold)
@@ -5234,7 +5232,7 @@ def AltAnalyzeMain(expr_var,alt_var,goelite_var,additional_var,exp_file_location
   if run_from_scratch == 'Process CEL files': expression_data_format = 'log'
   print "Beginning AltAnalyze Analysis... Format:", expression_data_format
 
-    
+
   if array_type == 'RNASeq': id_name = 'exon/junction IDs'
   else: id_name = 'array IDs'
 
@@ -5264,7 +5262,7 @@ def AltAnalyzeMain(expr_var,alt_var,goelite_var,additional_var,exp_file_location
   if avg_all_for_ss == 'yes': cs_type = 'core'
   else: cs_type = 'constitutive'
   print_items.append('\t'+'calculate_gene_expression_using'+': '+cs_type)
-  
+
   print_items.append("Alternative Exon Analysis Parameters Being Used..." )
   print_items.append('\t'+'analysis_method'+': '+analysis_method)
   print_items.append('\t'+'p_threshold'+': '+str(p_threshold))
@@ -5272,7 +5270,7 @@ def AltAnalyzeMain(expr_var,alt_var,goelite_var,additional_var,exp_file_location
   print_items.append('\t'+'alt_exon_fold_variable'+': '+str(alt_exon_fold_variable))
   print_items.append('\t'+'gene_expression_cutoff'+': '+str(gene_expression_cutoff))
   print_items.append('\t'+'remove_intronic_junctions'+': '+remove_intronic_junctions)
-  
+
   print_items.append('\t'+'avg_all_for_ss'+': '+avg_all_for_ss)
   print_items.append('\t'+'permute_p_threshold'+': '+str(permute_p_threshold))
   print_items.append('\t'+'perform_permutation_analysis'+': '+perform_permutation_analysis)
@@ -5282,7 +5280,7 @@ def AltAnalyzeMain(expr_var,alt_var,goelite_var,additional_var,exp_file_location
   print_items.append('\t'+'microRNA_prediction_method'+': '+microRNA_prediction_method)
   print_items.append('\t'+'analyze_all_conditions'+': '+analyze_all_conditions)
   print_items.append('\t'+'filter_for_AS'+': '+filter_for_AS)
-  
+
   if pathway_permutations == 'NA': run_GOElite = 'decide_later'
   else: run_GOElite = 'run-immediately'
   print_items.append('\t'+'run_GOElite'+': '+ run_GOElite)
@@ -5299,7 +5297,7 @@ def AltAnalyzeMain(expr_var,alt_var,goelite_var,additional_var,exp_file_location
   summary_data_db['direct_domain_genes'] = 0
   summary_data_db['miRNA_gene_denom'] = 0
   summary_data_db['miRNA_gene_hits'] = 0
-          
+
   if test_results_pannel == 'yes': ### It can be difficult to get error warnings from GO-Elite, unless run here
       graphic_links = []
       graphic_links.append(['test','Config/AltAnalyze_structure-RNASeq.jpg'])
@@ -5307,12 +5305,12 @@ def AltAnalyzeMain(expr_var,alt_var,goelite_var,additional_var,exp_file_location
       print_out = 'Analysis complete. AltAnalyze results\nexported to "AltResults/AlternativeOutput".'
       dataset = 'test'; results_dir=''
       print "Analysis Complete\n";
-                
+
       if root !='' and root !=None:
           UI.InfoWindow(print_out,'Analysis Completed!')
           tl = Toplevel(); SummaryResultsWindow(tl,'GE',results_dir,dataset,'parent',summary_data_db)
       root.destroy(); sys.exit()
-      
+
   global export_go_annotations; global aspire_output_list; global aspire_output_gene_list
   global filter_probesets_by; global global_addition_factor; global onlyAnalyzeJunctions
   global log_fold_cutoff; global aspire_cutoff; global annotation_system; global alt_exon_logfold_cutoff
@@ -5323,7 +5321,7 @@ def AltAnalyzeMain(expr_var,alt_var,goelite_var,additional_var,exp_file_location
   hs = 'Hs'; mm = 'Mm'; dr = 'Dr'; rn = 'Rn'; species = mm
   include_raw_data = 'yes'; expression_threshold = 70 ### Based on suggestion from BMC Genomics. 2006 Dec 27;7:325. PMID: 17192196, for hu-exon 1.0 st array
   avg_all_for_ss = 'no'  ###Default is 'no' since we don't want all probes averaged for the exon arrays"""
-    
+
   ###### Run ExpressionBuilder ######
   """ExpressionBuilder is used to:
   (1) extract out gene expression values, provide gene annotations, and calculate summary gene statistics
@@ -5335,13 +5333,13 @@ def AltAnalyzeMain(expr_var,alt_var,goelite_var,additional_var,exp_file_location
     additional_algorithm = additional_algorithms.Algorithm()
     additional_score = additional_algorithms.Score()
   except Exception: additional_algorithm = 'null'; additional_score = 'null'
-  
+
   if analysis_method == 'FIRMA': analyze_metaprobesets = 'yes'
   elif additional_algorithm == 'FIRMA': analyze_metaprobesets = 'yes'
   else: analyze_metaprobesets = 'no'
 
   ### Check to see if this is a real or FAKE (used for demonstration purposes) dataset
-  if run_from_scratch == 'Process CEL files' or 'Feature Extraction' in run_from_scratch: 
+  if run_from_scratch == 'Process CEL files' or 'Feature Extraction' in run_from_scratch:
       for dataset in exp_file_location_db:
         if run_from_scratch == 'Process CEL files':
             fl = exp_file_location_db[dataset]
@@ -5349,7 +5347,7 @@ def AltAnalyzeMain(expr_var,alt_var,goelite_var,additional_var,exp_file_location
             results_dir = filepath(fl.RootDir())
             if '_demo' in pgf_file: ### Thus we are running demo CEL files and want to quit immediately
               print_out = 'Analysis complete. AltAnalyze results\nexported to "AltResults/AlternativeOutput".'
-              try:      
+              try:
                   print "Analysis Complete\n";
                   if root !='' and root !=None:
                       UI.InfoWindow(print_out,'Analysis Completed!')
@@ -5441,9 +5439,9 @@ def AltAnalyzeMain(expr_var,alt_var,goelite_var,additional_var,exp_file_location
             analysisType = ['exon','junction','reference']
             #analysisType = ['junction']
             multiBAMtoBED.parallelBAMProcessing(bam_dir,refExonCoordinateFile,outputExonCoordinateRefBEDfile,analysisType=analysisType,useMultiProcessing=fl.multiThreading(),MLP=mlp,root=root)
-    
+
           biotypes = RNASeq.alignExonsAndJunctionsToEnsembl(species,exp_file_location_db,dataset,Multi=mlp)
-      
+
       if biotypes == 'failed':
           print_out = 'No valid chromosomal positions in the input BED or BioScope files. Exiting AltAnalyze.'
           #print traceback.format_exc()
@@ -5452,7 +5450,7 @@ def AltAnalyzeMain(expr_var,alt_var,goelite_var,additional_var,exp_file_location
               root.destroy(); sys.exit()
           except Exception:
               print print_out; sys.exit()
-            
+
       #print '!!!!!back inside AltAnalyze'
       #returnLargeGlobalVars()
       reload(RNASeq)
@@ -5474,7 +5472,7 @@ def AltAnalyzeMain(expr_var,alt_var,goelite_var,additional_var,exp_file_location
     else:
         exp_threshold=200; rpkm_threshold=8
     RNASeq.singleCellRNASeqWorkflow(species, array_type, expFile, mlp, exp_threshold=exp_threshold, rpkm_threshold=rpkm_threshold)
-    
+
   goelite_run = False
   if run_from_scratch == 'Process Expression file' or run_from_scratch == 'Process CEL files' or run_from_scratch == 'Process RNA-seq reads' or 'Feature Extraction' in run_from_scratch:
       if fl.NormMatrix()=='quantile' and 'Feature Extraction' not in run_from_scratch:
@@ -5548,7 +5546,7 @@ def AltAnalyzeMain(expr_var,alt_var,goelite_var,additional_var,exp_file_location
       except Exception:
         print traceback.format_exc()
 
-                            
+
       if status == 'stop':
           ### See if the array and species are compatible with GO-Elite analysis
           system_codes = UI.getSystemInfo()
@@ -5585,8 +5583,8 @@ def AltAnalyzeMain(expr_var,alt_var,goelite_var,additional_var,exp_file_location
               if use_Tkinter == 'yes':
                   print "Analysis Complete\n"; UI.InfoWindow(print_out,'Analysis Completed!')
                   tl = Toplevel(); SummaryResultsWindow(tl,'GE',results_dir,dataset,'parent',summary_data_db)
-                  if pathway_permutations == 'NA' and run_from_scratch != 'Annotate External Results':                
-                      if go_elite_analysis_supported == 'yes': 
+                  if pathway_permutations == 'NA' and run_from_scratch != 'Annotate External Results':
+                      if go_elite_analysis_supported == 'yes':
                           UI.getUpdatedParameters(array_type,species,run_from_scratch,file_dirs)
                   try: AltAnalyzeSetup('no')
                   except Exception:
@@ -5602,7 +5600,7 @@ def AltAnalyzeMain(expr_var,alt_var,goelite_var,additional_var,exp_file_location
       #updateDBs(species,array_type)
       sys.exit()
   if perform_alt_analysis != 'expression': ###Thus perform_alt_analysis = 'both' or 'alt' (default when skipping expression summary step)
-      ###### Run AltAnalyze ######  
+      ###### Run AltAnalyze ######
       global dataset_name; global summary_results_db; global summary_results_db2
       summary_results_db={}; summary_results_db2={}; aspire_output_list=[]; aspire_output_gene_list=[]
 
@@ -5624,21 +5622,21 @@ def AltAnalyzeMain(expr_var,alt_var,goelite_var,additional_var,exp_file_location
           gene_expression_cutoff = 2 ### A number less than one is invalid
           print "WARNING!!!! Invalid gene expression fold cutoff entered,\nusing the default value of 2, must be greater than 1."
       log_fold_cutoff = math.log(float(gene_expression_cutoff),2)
-    
+
       if analysis_method != 'ASPIRE' and analysis_method != 'none':
           if p_threshold <= 0 or p_threshold >1:
               p_threshold = 0.05 ### A number less than one is invalid
-              print "WARNING!!!! Invalid alternative exon p-value threshold entered,\nusing the default value of 0.05."              
+              print "WARNING!!!! Invalid alternative exon p-value threshold entered,\nusing the default value of 0.05."
           if alt_exon_fold_variable<1:
               alt_exon_fold_variable = 1 ### A number less than one is invalid
               print "WARNING!!!! Invalid alternative exon fold cutoff entered,\nusing the default value of 2, must be greater than 1."
           try: alt_exon_logfold_cutoff = math.log(float(alt_exon_fold_variable),2)
           except Exception: alt_exon_logfold_cutoff = 1
       else: alt_exon_logfold_cutoff = float(alt_exon_fold_variable)
-      
+
       global_addition_factor = 0
       export_junction_comparisons = 'no' ### No longer accessed in this module - only in update mode through a different module
-      
+
       factor_out_expression_changes = 'yes' ### Use 'no' if data is normalized already or no expression normalization for ASPIRE desired
       only_include_constitutive_containing_genes = 'yes'
       remove_transcriptional_regulated_genes = 'yes'
@@ -5679,7 +5677,7 @@ def AltAnalyzeMain(expr_var,alt_var,goelite_var,additional_var,exp_file_location
       else:
           ### Occurs for RNASeq when no junctions are present
           summary_data_db2={}
-       
+
       if array_type == 'junction' or array_type == 'RNASeq':
           #Reanalyze junction array data separately for individual probests rather than recipricol junctions
           if array_type == 'junction': explicit_data_type = 'exon'
@@ -5690,7 +5688,7 @@ def AltAnalyzeMain(expr_var,alt_var,goelite_var,additional_var,exp_file_location
           analysis_method, null, filter_probeset_types, null, null, alt_exon_fold_variable, null, null, null, null, null, null, null, calculate_normIntensity_p, null = alt_exon_defaults
 
           filter_probesets_by = filter_probeset_types
-              
+
           if additional_algorithm == 'splicing-index' or additional_algorithm == 'FIRMA':
               analysis_method = additional_algorithm
               #print [analysis_method], [filter_probeset_types], [p_threshold], [alt_exon_fold_variable]
@@ -5704,9 +5702,9 @@ def AltAnalyzeMain(expr_var,alt_var,goelite_var,additional_var,exp_file_location
                 #universalPrintFunction(['Alternative Exon Results for Individual Probeset Analyses:'])
                 #for i in summary_data_db: universalPrintFunction([i+' '+ str(summary_data_db[i])])
               except Exception:
-                print traceback.format_exc() 
+                print traceback.format_exc()
                 None
-      #""" 
+      #"""
       ### Perform dPSI Analysis
       try:
         if 'counts.' in fl.CountsFile(): pass
@@ -5730,7 +5728,7 @@ def AltAnalyzeMain(expr_var,alt_var,goelite_var,additional_var,exp_file_location
           except Exception: pass
           #"""
           inputpsi = fl.RootDir()+'AltResults/AlternativeOutput/'+species+'_RNASeq_top_alt_junctions-PSI-clust.txt'
-          
+
           ### Calculate ANOVA p-value stats based on groups
           matrix,compared_groups,original_data = statistics.matrixImport(inputpsi)
           matrix_pvalues=statistics.runANOVA(inputpsi,matrix,compared_groups)
@@ -5739,7 +5737,7 @@ def AltAnalyzeMain(expr_var,alt_var,goelite_var,additional_var,exp_file_location
           try: summary_data_db2['QC']+=graphic_link1
           except Exception: summary_data_db2['QC']=graphic_link1
       except Exception: print traceback.format_exc()
-      
+
       import RNASeq
       try:
         graphic_link = RNASeq.compareExonAndJunctionResults(species,array_type,summary_results_db,root_dir)
@@ -5747,8 +5745,8 @@ def AltAnalyzeMain(expr_var,alt_var,goelite_var,additional_var,exp_file_location
         except Exception: summary_data_db2['QC']=graphic_link
       except Exception:
         print traceback.format_exc()
-    
-      #""" 
+
+      #"""
       ### Export the top 15 spliced genes
       try:
             altresult_dir = fl.RootDir()+'/AltResults/'
@@ -5759,7 +5757,7 @@ def AltAnalyzeMain(expr_var,alt_var,goelite_var,additional_var,exp_file_location
             ### Lookup the raw expression dir
             expression_results_folder = string.replace(altresult_dir,'AltResults','ExpressionInput')
             expression_dir = UI.getValidExpFile(expression_results_folder)
-      
+
             try: altresult_dir = UI.getValidSplicingScoreFile(altanalyze_results_folder)
             except Exception,e:
                   print traceback.format_exc()
@@ -5808,7 +5806,7 @@ def AltAnalyzeMain(expr_var,alt_var,goelite_var,additional_var,exp_file_location
             print 'No BAM files present in the root directory... skipping SashimiPlot analysis...'
       except Exception:
         print traceback.format_exc()
-        
+
   try:
       clearObjectsFromMemory(exon_db); clearObjectsFromMemory(constitutive_probeset_db)
       clearObjectsFromMemory(go_annotations); clearObjectsFromMemory(original_microRNA_z_score_data)
@@ -5825,13 +5823,13 @@ def AltAnalyzeMain(expr_var,alt_var,goelite_var,additional_var,exp_file_location
 
   #print '!!!!!finished'
   #returnLargeGlobalVars()
-  
+
   end_time = time.time(); time_diff = int(end_time-start_time)
   universalPrintFunction(["Analyses finished in %d seconds" % time_diff])
   #universalPrintFunction(["Hit Enter/Return to exit AltAnalyze"])
   for dataset in exp_file_location_db:
        fl = exp_file_location_db[dataset]; results_dir = filepath(fl.RootDir())
-        
+
   ### Perform GO-Elite Analysis
   if pathway_permutations != 'NA':
       goelite_run = False
@@ -5839,7 +5837,7 @@ def AltAnalyzeMain(expr_var,alt_var,goelite_var,additional_var,exp_file_location
       elite_input_dirs = ['AltExonConfirmed','AltExon','regulated','upregulated','downregulated'] ### Run GO-Elite multiple times to ensure heatmaps are useful and to better organize results
       for elite_dir in elite_input_dirs:
           file_dirs = results_dir+'GO-Elite/'+elite_dir,results_dir+'GO-Elite/denominator',results_dir+'GO-Elite/'+elite_dir
-          input_dir = results_dir+'GO-Elite/'+elite_dir 
+          input_dir = results_dir+'GO-Elite/'+elite_dir
           try: input_files = read_directory(input_dir) ### Are there any files to analyze?
           except Exception: input_files = []
           if len(input_files)>0:
@@ -5871,15 +5869,15 @@ def AltAnalyzeMain(expr_var,alt_var,goelite_var,additional_var,exp_file_location
           except Exception: pass
       try: AltAnalyzeSetup('no')
       except Exception: sys.exit()
-          
-def exportSummaryResults(summary_results_db,analysis_method,aspire_output_list,aspire_output_gene_list,annotate_db,array_type,number_events_analyzed,root_dir):       
+
+def exportSummaryResults(summary_results_db,analysis_method,aspire_output_list,aspire_output_gene_list,annotate_db,array_type,number_events_analyzed,root_dir):
       try:
           ResultsExport_module.outputSummaryResults(summary_results_db,'',analysis_method,root_dir)
           #ResultsExport_module.outputSummaryResults(summary_results_db2,'-uniprot_attributes',analysis_method)
           ResultsExport_module.compareAltAnalyzeResults(aspire_output_list,annotate_db,number_events_analyzed,'no',analysis_method,array_type,root_dir)
-          ResultsExport_module.compareAltAnalyzeResults(aspire_output_gene_list,annotate_db,'','yes',analysis_method,array_type,root_dir) 
+          ResultsExport_module.compareAltAnalyzeResults(aspire_output_gene_list,annotate_db,'','yes',analysis_method,array_type,root_dir)
       except UnboundLocalError: print "...No results to summarize" ###Occurs if there is a problem parsing these files
-          
+
 def checkGOEliteProbesets(fn,species):
     ### Get all probesets in GO-Elite files
     mod_source = 'Ensembl'+'-'+'Affymetrix'
@@ -5898,7 +5896,7 @@ def checkGOEliteProbesets(fn,species):
     ###Import an Affymetrix array annotation file (from http://www.affymetrix.com) and parse out annotations
     csv_probesets = {}; x=0; y=0
     fn=filepath(fn); status = 'no'
-    for line in open(fn,'r').readlines():             
+    for line in open(fn,'r').readlines():
         probeset_data = string.replace(line,'\n','')  #remove endline
         probeset_data = string.replace(probeset_data,'---','')
         affy_data = string.split(probeset_data[1:-1],'","')
@@ -5924,7 +5922,7 @@ class SpeciesData:
     def Systems(self): return self._systems
     def TaxID(self): return self._taxid
     def __repr__(self): return self.SpeciesCode()+'|'+SpeciesName
-    
+
 def getSpeciesInfo():
     ### Used by AltAnalyze
     UI.importSpeciesInfo(); species_names={}
@@ -5936,7 +5934,7 @@ def getSpeciesInfo():
 def importGOEliteSpeciesInfo():
     filename = 'Config/goelite_species.txt'; x=0
     fn=filepath(filename); species_codes={}
-    for line in open(fn,'rU').readlines():             
+    for line in open(fn,'rU').readlines():
         data = cleanUpLine(line)
         abrev,species,taxid,compatible_mods = string.split(data,'\t')
         if x==0: x=1
@@ -5973,7 +5971,7 @@ def verifyFile(filename):
         for line in open(fn,'rU').xreadlines(): status = 'found';break
     except Exception: status = 'not found'
     return status
-        
+
 def verifyFileLength(filename):
     count = 0
     try:
@@ -6003,7 +6001,7 @@ def displayHelp():
         print cleanUpLine(line)
     print '\n################################################ - END HELP'
     sys.exit()
-    
+
 ###### Command Line Functions (AKA Headless Mode) ######
 def commandLineRun():
     print 'Running commandline options'
@@ -6111,12 +6109,12 @@ def commandLineRun():
         arg = string.replace(arg,'\x93','') ### These are non-standard forward quotes
         arg = string.replace(arg,'\x94','') ### These are non-standard reverse quotes
         arguments.append(arg)
-    
+
     print '\nArguments input:',arguments,'\n'
     if '--help' in arguments[1:] or '--h' in arguments[1:]:
         try: displayHelp() ### Print out a help file and quit
         except Exception: print 'See: http://www.altanalyze.org for documentation and command-line help';sys.exit()
-    
+
     if 'AltAnalyze' in arguments[1]:
         arguments = arguments[1:] ### Occurs on Ubuntu with the location of AltAnalyze being added to sys.argv (exclude this since no argument provided for this var)
     try:
@@ -6159,7 +6157,7 @@ def commandLineRun():
                                                          'CountsCutoff=','FoldDiff=','SamplesDiffering=','removeOutliers='
                                                          'featurestoEvaluate=','restrictBy=','ExpressionCutoff=',
                                                          'excludeCellCycle=','runKallisto=','fastq_dir=','FDR='])
-    
+
     except Exception:
         print traceback.format_exc()
         print "There is an error in the supplied command-line arguments (each flag requires an argument)"; sys.exit()
@@ -6235,7 +6233,7 @@ def commandLineRun():
             if multiThreading == 'yes': multiThreading = True
             elif 'rue' in multiThreading: multiThreading = True
             else: multiThreading = False
-        
+
     if 'other' in manufacturer or 'Other' in manufacturer:
         ### For other IDs
         systemToUse = array_type
@@ -6258,7 +6256,7 @@ def commandLineRun():
                 print_out = "\nUnable to run!!! Please designate either a specific platfrom (e.g., --specificArray hgU133_2), select CEL files, or an "
                 print_out += "exon-level mapping file location (--exonMapFile C:/mapping.txt) to perform alternative exon analyses for this platform."
         ### Will need to check here to see if the platform is supported (local or online files) OR wait until an error is encountered later
-        
+
     ######## Perform analyses independent from AltAnalyze database centric analyses that require additional parameters
     if len(image_export) > 0 or len(accessoryAnalysis)>0 or runICGS:
         if runICGS:
@@ -6270,7 +6268,7 @@ def commandLineRun():
             if len(cel_file_dir)>0:
                 values = species,exp_file_location_db,dataset,mlp_instance
                 StatusWindow(values,'preProcessRNASeq') ### proceed to run the full discovery analysis here!!!
-            
+
             else:
                 if len(input_exp_file) > 0: pass
                 else: 'Please indicate a source folder or expression file (e.g., --expdir /dataset/singleCells.txt)'
@@ -6279,7 +6277,7 @@ def commandLineRun():
                     array_type, IDtype = string.split(array_type)
                 array_type == "3'array"
                 if IDtype == None: IDtype = manufacturer
-        
+
             row_method = 'weighted'
             column_method = 'average'
             row_metric = 'cosine'
@@ -6348,12 +6346,12 @@ def commandLineRun():
                 gsp.setGeneSelection(GeneSelection)
                 gsp.setJustShowTheseIDs(JustShowTheseIDs)
                 gsp.setNormalize('median')
-                gsp.setSampleDiscoveryParameters(ExpressionCutoff,CountsCutoff,FoldDiff,SamplesDiffering,   
-                        removeOutliers,featurestoEvaluate,restrictBy,excludeCellCycle,column_metric,column_method,rho_cutoff) 
-                
+                gsp.setSampleDiscoveryParameters(ExpressionCutoff,CountsCutoff,FoldDiff,SamplesDiffering,
+                        removeOutliers,featurestoEvaluate,restrictBy,excludeCellCycle,column_metric,column_method,rho_cutoff)
+
             import RNASeq
             mlp_instance = mlp
-            
+
             if cel_file_dir != '':
                 expFile = cel_file_dir + '/ExpressionInput/'+ 'exp.'+exp_name+'.txt'
             elif input_exp_file !='':
@@ -6364,11 +6362,11 @@ def commandLineRun():
                     root_dir = export.findParentDir(expFile)
                     expFile = root_dir+'/ExpressionInput/exp.'+export.findFilename(expdir2)
                     export.copyFile(input_exp_file, expFile)
-                    
+
             global log_file
             root_dir = export.findParentDir(expFile)
             root_dir = string.replace(root_dir,'/ExpressionInput','')
-            time_stamp = timestamp()    
+            time_stamp = timestamp()
             log_file = filepath(root_dir+'AltAnalyze_report-'+time_stamp+'.log')
             log_report = open(log_file,'w'); log_report.close()
             sys.stdout = Logger('')
@@ -6383,7 +6381,7 @@ def commandLineRun():
             print [excludeCellCycle]
             UI.RemotePredictSampleExpGroups(expFile, mlp_instance, gsp,(species,array_type)) ### proceed to run the full discovery analysis here!!!
             sys.exit()
-            
+
         if 'WikiPathways' in image_export:
             #python AltAnalyze.py --input /Users/test/input/criterion1.txt --image WikiPathways --mod Ensembl --species Hs --wpid WP536
             if wpid==None:
@@ -6402,11 +6400,11 @@ def commandLineRun():
                 graphic_link = WikiPathways_webservice.visualizePathwayAssociations(input_file_dir,species,mod,wpid)
             except Exception,e:
                 if 'force_no_matching_error' in traceback.format_exc():
-                    print '\nUnable to run!!! None of the input IDs mapped to this pathway\n' 
+                    print '\nUnable to run!!! None of the input IDs mapped to this pathway\n'
                 elif 'IndexError' in traceback.format_exc():
                     print '\nUnable to run!!! Input ID file does not have at least 3 columns, with the second column being system code\n'
                 elif 'ValueError' in traceback.format_exc():
-                    print '\nUnable to run!!! Input ID file error. Please check that you do not have extra rows with no data\n' 
+                    print '\nUnable to run!!! Input ID file error. Please check that you do not have extra rows with no data\n'
                 elif 'source_data' in traceback.format_exc():
                     print '\nUnable to run!!! Input ID file does not contain a valid system code\n'
                 elif 'goelite' in traceback.format_exc():
@@ -6448,7 +6446,7 @@ def commandLineRun():
                 print "Please enter a valide species (--species)"; sys.exit()
             UI.IDconverter(input_file_dir, species, inputIDType, outputIDType, None)
             sys.exit()
-            
+
         if 'hierarchical' in image_export:
             #python AltAnalyze.py --input "/Users/test/pluri.txt" --image hierarchical --row_method average --column_method single --row_metric cosine --column_metric euclidean --color_gradient red_white_blue --transpose False --PathwaySelection Apoptosis:WP254 --GeneSetSelection WikiPathways --species Hs --platform exon --display false
             if input_file_dir==None:
@@ -6527,7 +6525,7 @@ def commandLineRun():
                 UI.createHeatMap(input_file_dir, row_method, row_metric, column_method, column_metric, color_gradient, transpose, contrast, None, display=display)
             #import clustering; clustering.outputClusters([input_file_dir],[])
             sys.exit()
-            
+
         if 'PCA' in image_export:
             #AltAnalyze.py --input "/Users/nsalomonis/Desktop/folds.txt" --image PCA --plotType 3D --display True --labels yes
             #--algorithm "t-SNE"
@@ -6579,11 +6577,11 @@ def commandLineRun():
                 elif opt == '--AltResultsDir': altresult_dir = arg
                 elif opt == '--geneFileDir': geneFileDir = arg
                 elif opt == '--analysisType': analysisType=arg
-                
+
             if altresult_dir == None:
                 print 'Please include the location of the AltResults directory (--AltResultsDir)'; sys.exit()
             if len(genes)==0 and len(geneFileDir)==0:
-                print "Please indicate the genes (--genes) or gene file location (--geneFileDir) for AltExonViewer";sys.exit()                
+                print "Please indicate the genes (--genes) or gene file location (--geneFileDir) for AltExonViewer";sys.exit()
             if species == None:
                 print "Please enter a valide species (--species)"; sys.exit()
             if array_type == None:
@@ -6624,14 +6622,14 @@ def commandLineRun():
                         UI.altExonViewer(species,platform,altresult_dir, gene_string, show_introns, analysisType, False)
                     except Exception: pass
                     sys.exit()
-                        
+
             if len(genes)==0:
                 print 'Please list one or more genes (--genes "ANXA7 FYN TCF3 NAV2 ETS2 MYLK ATP2A2")'; sys.exit()
             try: UI.altExonViewer(species,platform,altresult_dir, genes, show_introns, analysisType, False)
             except Exception:
-                print traceback.format_exc() 
+                print traceback.format_exc()
             sys.exit()
-            
+
         if 'network' in image_export:
             #AltAnalyze.py --image network --species Hs --output "C:\GSE9440_RAW" --PathwaySelection Apoptosis:WP254 --GeneSetSelection WikiPathways
             for opt, arg in options: ### Accept user input for these hierarchical clustering variables
@@ -6647,7 +6645,7 @@ def commandLineRun():
                 elif opt == '--PathwaySelection': PathwaySelection=arg
                 elif opt == '--OntologyID': OntologyID=arg
                 elif opt == '--display': display=arg
-            
+
             if update_interactions == 'yes': update_interactions = True
             else: update_interactions = False
             if input_file_dir == None: pass
@@ -6741,12 +6739,12 @@ def commandLineRun():
             print 'Finished...exiting'
             sys.exit()
         if 'package' not in update_method and 'markers' not in update_method:
-            ### Example: 
+            ### Example:
             ### python AltAnalyze.py --species all --arraytype all --update all --version 60
             ### tr -d \\r < AltAnalyze.py > AltAnalyze_new.py
             ### chmod +x AltAnalyze_new.py
             ### nohup ./AltAnalyze.py --update all --species Mm --arraytype gene --arraytype exon --version 60 2>&1 > nohup_v60_Mm.txt
-        
+
             if array_type == 'all' and (species == 'Mm' or species == 'all'): array_type = ['AltMouse','exon','gene','junction','RNASeq']
             elif array_type == 'all' and (species == 'Hs' or species == 'Rn'): array_type = ['exon','gene','junction','RNASeq']
             else: array_type = [array_type]+additional_array_types
@@ -6762,7 +6760,7 @@ def commandLineRun():
                     ens_species = string.replace(ens_species,'_',' ')
                     if ens_species in all_supported_names:
                         all_species_names[all_supported_names[ens_species]]=[]
-                
+
                 del all_species_names['Hs']
                 del all_species_names['Mm']
                 del all_species_names['Rn']
@@ -6770,7 +6768,7 @@ def commandLineRun():
                 del all_species_names['Go']
                 del all_species_names['Bt']
                 del all_species_names['Sc']
-                
+
                 del all_species_names['Ss']
                 del all_species_names['Pv']
                 del all_species_names['Pt']
@@ -6778,11 +6776,11 @@ def commandLineRun():
                 del all_species_names['Tt']
                 del all_species_names['Tr']
                 del all_species_names['Ts']
-                
+
                 del all_species_names['Pb']
                 del all_species_names['Pc']
                 del all_species_names['Ec']
-                
+
                 del all_species_names['Tb']
                 del all_species_names['Tg']
                 del all_species_names['Dn']
@@ -6791,11 +6789,11 @@ def commandLineRun():
                 del all_species_names['Dm']
                 del all_species_names['Oc']
                 del all_species_names['Og']
-                
+
                 del all_species_names['Fc']
                 del all_species_names['Dr']
                 del all_species_names['Me']
-                
+
                 del all_species_names['Cp']
                 del all_species_names['Tt']
                 del all_species_names['La']
@@ -6813,12 +6811,12 @@ def commandLineRun():
                 del all_species_names['Me']
                 del all_species_names['Ml']
                 del all_species_names['Mi']
-                
+
                 del all_species_names['St']
                 del all_species_names['Sa']
                 del all_species_names['Cs']
                 del all_species_names['Vp']
-                
+
                 del all_species_names['Ch']
                 del all_species_names['Ee']
                 del all_species_names['Ac']"""
@@ -6830,7 +6828,7 @@ def commandLineRun():
                 all_species_names = sx+all_species_names2
                 species = all_species_names
             else: species = [species]
-            
+
             update_uniprot='no'; update_ensembl='no'; update_probeset_to_ensembl='no'; update_domain='no'; update_miRs = 'no'; genomic_build = 'new'; update_miR_seq = 'yes'
             if 'all' in update_method:
                 update_uniprot='yes'; update_ensembl='yes'; update_probeset_to_ensembl='yes'; update_domain='yes'; update_miRs = 'yes'
@@ -6877,12 +6875,12 @@ def commandLineRun():
                             print 'update_domain',update_domain
                             print 'update_miRs',update_miRs
                             update.executeParameters(specific_species,platform_name,force,genomic_build,update_uniprot,update_ensembl,update_probeset_to_ensembl,update_domain,update_miRs,update_all,update_miR_seq,ensembl_version)
-                        else: print 'ignoring',specific_species 
+                        else: print 'ignoring',specific_species
             sys.exit()
-            
+
     if 'package' in update_method:
         ### Example: python AltAnalyze.py --update package --species all --platform all --version 65
-        
+
         if ensembl_version == 'current': print '\nPlease specify version of the database to package (e.g., --version 60).'; sys.exit()
         ensembl_version = 'EnsMart'+ensembl_version
 
@@ -6898,7 +6896,7 @@ def commandLineRun():
         if array_type == None or array_type == 'all': possible_arrays = possible_arrays
         else: possible_arrays = [array_type]+additional_array_types
         species_to_package={}
-        
+
         dirs = unique.read_directory('/AltDatabase/'+ensembl_version)
         #print possible_arrays, possible_species; sys.exit()
         for species_code in dirs:
@@ -6945,7 +6943,7 @@ def commandLineRun():
             files_to_copy+=['AltMouse_junction-comparisons.txt']
             files_to_copy+=['AltMouse_gene_annotations.txt']
             files_to_copy+=['AltMouse_annotations.txt']
-            
+
             common_to_copy =['uniprot/'+species+'/custom_annotations.txt']
             common_to_copy+=['ensembl/'+species+'/'+species+'_Ensembl-annotations_simple.txt']
             common_to_copy+=['ensembl/'+species+'/'+species+'_Ensembl-annotations.txt']
@@ -6959,7 +6957,7 @@ def commandLineRun():
                     ir = 'AltDatabase/'+ensembl_version+'/'
                     er = 'ArchiveDBs/'+ensembl_version+'/'+species+'/'+ensembl_version+'/'
                     export.copyFile(ir+file, er+file)
-                    
+
             if 'RNASeq' in species_to_package[species]:
                 common_to_copy+=['ensembl/'+species+'/'+species+'_Ensembl_junction.txt']
                 common_to_copy+=['ensembl/'+species+'/'+species+'_Ensembl_exon.txt']
@@ -7012,7 +7010,7 @@ def commandLineRun():
                             except Exception:
                                 try: export.copyFile(ir+file, er+file); export_path = er+file
                                 except Exception: null = [] ### File not found in directory
-                            
+
             if 'RNASeq' in species_to_package[species]:
                 src = 'ArchiveDBs/'+ensembl_version+'/'+species+'/'+ensembl_version
                 dst = 'ArchiveDBs/'+ensembl_version+'/'+species+'/'+species+'_RNASeq.zip'
@@ -7031,7 +7029,7 @@ def commandLineRun():
                 update.zipDirectory(src); print 'Zipping',species+'_junction'
                 os.rename(src+'.zip', dst)
         sys.exit()
-        
+
     if 'markers' in update_method:
         if species == None or platform == None:
             print "WARNING! A species and platform (e.g., exon, junction, 3'array or RNASeq) must be defined to identify markers.";sys.exit()
@@ -7053,7 +7051,7 @@ def commandLineRun():
 
             This module can peform these analyses on protein coding or ncRNAs and can segregate the cell/tissue groups into clusters
             when a group notation is present in the sample name (e.g., 0~Heart, 0~Brain, 1~Stem Cell)"""
-            
+
             import markerFinder
             if 'AltResults' in input_exp_file and 'Clustering' not in input_exp_file:
                 ### This applies to a file compoosed of exon-level normalized intensities (calculae average group expression)
@@ -7093,7 +7091,7 @@ def commandLineRun():
                 try: correlationDirection = direction ### correlate to a positive or inverse negative in silico artificial pattern
                 except Exception: correlationDirection = 'up'
                 fl.setCorrelationDirection(correlationDirection)
-        
+
                 if expression_data_format == 'non-log': logTransform = True
                 else: logTransform = False
                 if 'topSplice' in input_exp_file:
@@ -7109,15 +7107,15 @@ def commandLineRun():
                     print '--vendor not indicated by user... assuming Affymetrix'
                     fl.setVendor('Affymetrix')
                 try: markerFinder.generateMarkerHeatMaps(fl,array_type,convertNonLogToLog=logTransform)
-                except Exception: print traceback.format_exc() 
+                except Exception: print traceback.format_exc()
             print 'Cell/Tissue marker classification analysis finished';sys.exit()
-    
+
     if 'EnsMart' in ensembl_version:
         UI.exportDBversion(ensembl_version)
-    
+
     annotation_found = verifyFile(input_annotation_file)
     proceed = 'no'
-    
+
     if 'Official' not in update_method and denom_file_dir == None: ### If running GO-Elite independent of AltAnalyze (see below GO_Elite call)
         try:
             time_stamp = timestamp()
@@ -7221,7 +7219,7 @@ def commandLineRun():
             annotation_found = verifyFile(input_annotation_file)
             if input_cdf_file == None:
                 print [specific_array_type], 'not currently supported... Please provide CDF to AltAnalyze (commandline or GUI) or manually add to AltDatabase/affymetrix/LibraryFiles'; sys.exit()
-                
+
             if cdf_found != "found":
                 ### Copy valid Library files to a local AltAnalyze database directory
                 input_cdf_file_lower = string.lower(input_cdf_file)
@@ -7233,10 +7231,10 @@ def commandLineRun():
                         destination_parent = 'AltDatabase/affymetrix/LibraryFiles/'
                         destination_parent = osfilepath(destination_parent+cdf_short)
                         info_list = input_cdf_file,destination_parent; UI.StatusWindow(info_list,'copy')
-                    else: print "Valid CDF file not found. Exiting program.";sys.exit()          
+                    else: print "Valid CDF file not found. Exiting program.";sys.exit()
                 else:
                     if '.pgf' in input_cdf_file_lower:
-                        ###Check to see if the clf and bgp files are present in this directory 
+                        ###Check to see if the clf and bgp files are present in this directory
                         icf_list = string.split(input_cdf_file,'/'); parent_dir = string.join(icf_list[:-1],'/'); cdf_short = icf_list[-1]
                         clf_short = string.replace(cdf_short,'.pgf','.clf')
                         kil_short = string.replace(cdf_short,'.pgf','.kil') ### Only applies to the Glue array
@@ -7283,7 +7281,7 @@ def commandLineRun():
         ge_fold_cutoffs, ge_pvalue_cutoffs, ge_ptype, filter_method, z_threshold, p_val_threshold, change_threshold, ORA_algorithm, resources_to_analyze, goelite_permutations, mod, returnPathways, NA = goelite_defaults
     else:
         print 'No species defined. Please include the species code (e.g., "--species Hs") and array type (e.g., "--arraytype exon") before proceeding.'
-        print '\nAlso check the printed arguments above to see if there are formatting errors, such as bad quotes.'; sys.exit()     
+        print '\nAlso check the printed arguments above to see if there are formatting errors, such as bad quotes.'; sys.exit()
 
     array_type_original = array_type
     #if array_type == 'gene': array_type = "3'array"
@@ -7303,7 +7301,7 @@ def commandLineRun():
         elif opt == '--GEeliteptype': ge_ptype=arg
         elif opt == '--ORAstat': ORA_algorithm=arg
         elif opt == '--returnPathways': returnPathways=arg
-        
+
         elif opt == '--FDR': FDR_statistic=arg
         elif opt == '--dabgp': dabg_p=arg
         elif opt == '--rawexp': expression_threshold=arg
@@ -7353,7 +7351,7 @@ def commandLineRun():
                 geneModel = False
         elif opt == '--reference':
             custom_reference = arg
-        
+
     if run_from_scratch == 'Process Feature Extraction files': ### Agilent Feature Extraction files as input for normalization
         normalize_gene_data = 'quantile' ### required for Agilent
         proceed = 'yes'
@@ -7361,7 +7359,7 @@ def commandLineRun():
         returnPathways = None
     if pipelineAnalysis == False:
         proceed = 'yes'
-        
+
     if proceed == 'yes':
         species_codes = UI.remoteSpeciesInfo()
         ### Update Ensembl Databases
@@ -7401,14 +7399,14 @@ def commandLineRun():
                                 if sc not in compatible_species: compatible_species.append(sc)
                             ac.setSpeciesCodes(compatible_species)
                 UI.exportArrayInfo(array_codes)
-                
+
             if species_full not in db_versions[select_version]:
                 print db_versions[select_version]
                 print species_full, ': This species is not available for this version %s of the Official database.' % select_version
             else:
                 update_goelite_resources = 'no' ### This is handled separately below
                 UI.getOnlineEliteDatabase(file_location_defaults,ensembl_version,[species],update_goelite_resources,'');
-            
+
             ### Attempt to download additional Ontologies and GeneSets
             if additional_resources[0] != None: ### Indicates that the user requested the download of addition GO-Elite resources
                 try:
@@ -7424,7 +7422,7 @@ def commandLineRun():
                 status = UI.verifyLineageProfilerDatabases(species,'command-line')
                 if status == False:
                     print 'Please note: LineageProfiler not currently supported for this species...'
-                
+
             if array_type == 'junction' or array_type == 'RNASeq': ### Download junction databases
                 try: UI.checkForLocalArraySupport(species,array_type,specific_array_type,'command-line')
                 except Exception:
@@ -7434,7 +7432,7 @@ def commandLineRun():
                 print "Finished adding database"
             sys.exit()
         try:
-            #print ge_fold_cutoffs,ge_pvalue_cutoffs, change_threshold, resources_to_analyze, goelite_permutations, p_val_threshold, z_threshold                    
+            #print ge_fold_cutoffs,ge_pvalue_cutoffs, change_threshold, resources_to_analyze, goelite_permutations, p_val_threshold, z_threshold
             change_threshold = int(change_threshold)-1
             goelite_permutations = int(goelite_permutations);change_threshold = change_threshold
             p_val_threshold = float(p_val_threshold); z_threshold = float(z_threshold)
@@ -7472,14 +7470,14 @@ def commandLineRun():
                 GO_Elite.remoteAnalysis(goelite_var,'non-UI',Multi=mlp)
                 sys.exit()
             except Exception:
-                print traceback.format_exc() 
+                print traceback.format_exc()
                 print "Unexpected error encountered. Please see log file."; sys.exit()
-       
+
         if run_lineage_profiler == 'yes':
             status = UI.verifyLineageProfilerDatabases(species,'command-line')
             if status == False:
                 print 'Please note: LineageProfiler not currently supported for this species...'
-        
+
         if run_lineage_profiler == 'yes' and input_file_dir != None and pipelineAnalysis == False and '--runLineageProfiler' in arguments:
             #python AltAnalyze.py --input "/Users/arrays/test.txt" --runLineageProfiler yes --vendor Affymetrix --platform "3'array" --species Mm --output "/Users/nsalomonis/Merrill"
             #python AltAnalyze.py --input "/Users/qPCR/samples.txt" --runLineageProfiler yes --geneModel "/Users/qPCR/models.txt"
@@ -7495,7 +7493,7 @@ def commandLineRun():
                     print 'For example: python AltAnalyze.py --species Hs --update Official --version EnsMart65\n';sys.exit()
             if status == False:
                 print 'Please note: LineageProfiler not currently supported for this species...';sys.exit()
-                
+
             try:
                 fl = UI.ExpressionFileLocationData('','','','')
                 fl.setSpecies(species)
@@ -7511,17 +7509,17 @@ def commandLineRun():
                 print_out = 'Lineage profiles and images saved to the folder "DataPlots" in the input file folder.'
                 print print_out
             except Exception:
-                print traceback.format_exc() 
+                print traceback.format_exc()
                 print_out = 'Analysis error occured...\nplease see warning printouts.'
                 print print_out
             sys.exit()
-  
+
         if array_type == 'junction' or array_type == 'RNASeq': ### Download junction databases
             try: UI.checkForLocalArraySupport(species,array_type,specific_array_type,'command-line')
             except Exception:
                 print 'Please install a valid gene database before proceeding.\n'
                 print 'For example: python AltAnalyze.py --species Hs --update Official --version EnsMart65';sys.exit()
-                    
+
         probeset_types = ['full','core','extended']
         if return_all == 'yes': ### Perform no alternative exon filtering when annotating existing FIRMA or MADS results
             dabg_p = 1; expression_threshold = 1; p_threshold = 1; alt_exon_fold_variable = 1
@@ -7547,7 +7545,7 @@ def commandLineRun():
                 except Exception: gene_exp_threshold = 0
                 try: exon_rpkm_threshold = float(exon_rpkm_threshold)
                 except Exception: exon_rpkm_threshold = 0
-                
+
                 if filter_probeset_types not in probeset_types and array_type == 'exon':
                     print "Invalid probeset-type entered:",filter_probeset_types,'. Must be "full", "extended" or "core"'; sys.exit()
                 elif array_type == 'gene' and filter_probeset_types == 'NA': filter_probeset_types = 'core'
@@ -7572,11 +7570,11 @@ def commandLineRun():
                         print "Invalid exon RPKM threshold entered:",exon_rpkm_threshold,'. Must be >= 0'; sys.exit()
                     if gene_exp_threshold < 1:
                         print "Invalid gene expression threshold entered:",gene_exp_threshold,'. Must be > 1'; sys.exit()
-                        
+
         if 'FIRMA' in additional_algorithms and array_type == 'RNASeq':
             print 'FIRMA is not an available option for RNASeq... Changing this to splicing-index.'
             additional_algorithms = 'splicing-index'
-            
+
         additional_algorithms = UI.AdditionalAlgorithms(additional_algorithms); additional_algorithms.setScore(additional_score)
         if array_type == 'RNASeq':
             manufacturer = 'RNASeq'
@@ -7584,7 +7582,7 @@ def commandLineRun():
             if build_exon_bedfile == 'yes': run_from_scratch = 'buildExonExportFiles'
 
         if run_from_scratch == 'Process AltAnalyze filtered': expression_data_format = 'log' ### This is switched to log no matter what, after initial import and analysis of CEL or BED files
-                  
+
         ### These variables are modified from the defaults in the module UI as below
         excludeNonExpExons = True
         if avg_all_for_ss == 'yes': avg_all_for_ss = 'yes'
@@ -7592,16 +7590,16 @@ def commandLineRun():
             if 'known exons' in avg_all_for_ss and array_type == 'RNASeq': excludeNonExpExons = False
             avg_all_for_ss = 'yes'
         else: avg_all_for_ss = 'no'
-        
+
         if run_MiDAS == 'NA': run_MiDAS = 'no'
-        
+
         if perform_alt_analysis == 'yes': perform_alt_analysis = 'yes'
         elif perform_alt_analysis == 'expression': perform_alt_analysis = 'expression'
         elif perform_alt_analysis == 'just expression': perform_alt_analysis = 'expression'
         elif perform_alt_analysis == 'no': perform_alt_analysis = 'expression'
         elif platform != "3'array": perform_alt_analysis = 'both'
         if systemToUse != None: array_type = systemToUse
-        
+
         try: permute_p_threshold = float(permute_p_threshold)
         except Exception: permute_p_threshold = permute_p_threshold
 
@@ -7610,14 +7608,14 @@ def commandLineRun():
         alt_var = analysis_method,p_threshold,filter_probeset_types,alt_exon_fold_variable,gene_expression_cutoff,remove_intronic_junctions,permute_p_threshold,perform_permutation_analysis, export_NI_values, analyze_all_conditions
         additional_var = calculate_normIntensity_p, run_MiDAS, use_direct_domain_alignments_only, microRNA_prediction_method, filter_for_AS, additional_algorithms
         goelite_var = ge_fold_cutoffs,ge_pvalue_cutoffs,ge_ptype,filter_method,z_threshold,p_val_threshold,change_threshold,resources_to_analyze,goelite_permutations,mod,returnPathways
-        
+
         if run_from_scratch == 'buildExonExportFiles':
             fl = UI.ExpressionFileLocationData('','','',''); fl.setExonBedBuildStatus('yes'); fl.setFeatureNormalization('none')
             fl.setCELFileDir(cel_file_dir); fl.setArrayType(array_type); fl.setOutputDir(output_dir)
             fl.setMultiThreading(multiThreading)
             exp_file_location_db={}; exp_file_location_db[dataset_name]=fl; parent_dir = output_dir
             perform_alt_analysis = 'expression'
-             
+
         if run_from_scratch == 'Process Expression file':
             if len(input_exp_file)>0:
                 if groups_file != None and comps_file != None:
@@ -7648,7 +7646,7 @@ def commandLineRun():
                         if cel_files2 != cel_files:
                             print "The probe set p-value file:\n"+input_stats_file+"\ndoes not have the same array order as the\nexpression file. Correct before proceeding."; sys.exit()
                 except Exception: print '\nWARNING...Expression file not found: "'+input_exp_file+'"\n\n'; sys.exit()
-            
+
             exp_name = string.replace(exp_name,'exp.',''); dataset_name = exp_name; exp_name = string.replace(exp_name,'.txt','')
             groups_name = 'ExpressionInput/groups.'+dataset_name; comps_name = 'ExpressionInput/comps.'+dataset_name
             groups_file_dir = output_dir+'/'+groups_name; comps_file_dir = output_dir+'/'+comps_name
@@ -7657,7 +7655,7 @@ def commandLineRun():
             if ((groups_found != 'found' or comps_found != 'found') and analyze_all_conditions != 'all groups') or (analyze_all_conditions == 'all groups' and groups_found != 'found'):
                 files_exported = UI.predictGroupsAndComps(cel_files,output_dir,exp_name)
                 if files_exported == 'yes': print "AltAnalyze inferred a groups and comps file from the CEL file names."
-                elif run_lineage_profiler == 'yes' and input_file_dir != None and pipelineAnalysis == False and '--runLineageProfiler' in arguments: pass 
+                elif run_lineage_profiler == 'yes' and input_file_dir != None and pipelineAnalysis == False and '--runLineageProfiler' in arguments: pass
                 else: print '...groups and comps files not found. Create before running AltAnalyze in command line mode.';sys.exit()
             fl = UI.ExpressionFileLocationData(input_exp_file,input_stats_file,groups_file_dir,comps_file_dir)
             dataset_name = exp_name
@@ -7668,8 +7666,8 @@ def commandLineRun():
                 print len(group_db), 'groups found'
                 if len(group_db) == 2: analyze_all_conditions = 'pairwise'
             exp_file_location_db={}; exp_file_location_db[exp_name]=fl
-            
-        elif run_from_scratch == 'Process CEL files' or run_from_scratch == 'Process RNA-seq reads' or run_from_scratch == 'Process Feature Extraction files': 
+
+        elif run_from_scratch == 'Process CEL files' or run_from_scratch == 'Process RNA-seq reads' or run_from_scratch == 'Process Feature Extraction files':
             if groups_file != None and comps_file != None:
                 try: shutil.copyfile(groups_file, string.replace(exp_file_dir,'exp.','groups.'))
                 except Exception: print 'Groups file already present in target location OR bad input path.'
@@ -7703,7 +7701,7 @@ def commandLineRun():
             fl = UI.ExpressionFileLocationData('','','',''); dataset_name = 'filtered-exp_dir'
             dirs = string.split(input_filtered_dir,'AltExpression'); parent_dir = dirs[0]
             exp_file_location_db={}; exp_file_location_db[dataset_name]=fl
-        
+
         for dataset in exp_file_location_db:
             fl = exp_file_location_db[dataset_name]
             file_location_defaults = UI.importDefaultFileLocations()
@@ -7718,7 +7716,7 @@ def commandLineRun():
             elif run_from_scratch == 'Process Feature Extraction files':
                 fl.setCELFileDir(cel_file_dir); fl.setOutputDir(output_dir)
             fl = exp_file_location_db[dataset]; fl.setRootDir(parent_dir)
-            
+
             apt_location = fl.APTLocation()
             root_dir = fl.RootDir(); fl.setExonBedBuildStatus(build_exon_bedfile)
             fl.setMarkerFinder(marker_finder)
@@ -7742,15 +7740,15 @@ def commandLineRun():
                 ### For data without a primary array ID key
                 manufacturer = "other:3'array"
                 fl.setVendor(manufacturer)
-        if array_type == 'RNASeq': ### Post version 2.0, add variables in fl rather than below            
+        if array_type == 'RNASeq': ### Post version 2.0, add variables in fl rather than below
             fl.setRPKMThreshold(rpkm_threshold)
             fl.setExonExpThreshold(exon_exp_threshold)
             fl.setGeneExpThreshold(gene_exp_threshold)
             fl.setExonRPKMThreshold(exon_rpkm_threshold)
             fl.setJunctionExpThreshold(expression_threshold)
             fl.setExonMapFile(exonMapFile)
-            fl.setPlatformType(platformType)            
-        
+            fl.setPlatformType(platformType)
+
         ### Verify database presence
         try: dirs = unique.read_directory('/AltDatabase')
         except Exception: dirs=[]
@@ -7815,10 +7813,10 @@ def testResultsPanel():
     global log_file; log_file = 'null.txt'
     global array_type; global explicit_data_type
     global run_GOElite; run_GOElite = 'run-immediately'
-    
+
     explicit_data_type = 'exon-only'
     array_type = 'RNASeq'
-        
+
     fl = UI.ExpressionFileLocationData('','','','')
     graphic_links = []
     graphic_links.append(['PCA','PCA.png'])
@@ -7830,12 +7828,12 @@ def testResultsPanel():
     graphic_links.append(['PCA3','PCA.png'])
     graphic_links.append(['HC3','HC.png'])
     graphic_links.append(['PCA4','PCA.png'])
-    graphic_links.append(['HC4','HC.png'])    
+    graphic_links.append(['HC4','HC.png'])
     summary_db={}
     summary_db['QC'] = graphic_links
     #summary_db={}
     fl.setGraphicLinks(graphic_links)
-    
+
     summary_db['gene_assayed'] = 1
     summary_db['denominator_exp_genes'] = 1
     summary_db['alt_events'] = 1
@@ -7856,9 +7854,9 @@ def testResultsPanel():
         tl = Toplevel(); SummaryResultsWindow(tl,'GE',results_dir,dataset,'parent',summary_db)
         print 'here'
     #sys.exit()
-    
+
 class Logger(object):
-    def __init__(self,null): 
+    def __init__(self,null):
         self.terminal = sys.stdout
         self.log = open(log_file, "w")
 
@@ -7869,7 +7867,7 @@ class Logger(object):
         self.log.close()
 
     def flush(self): pass
-    
+
 if __name__ == '__main__':
     try: mlp.freeze_support()
     except Exception: pass
@@ -7903,9 +7901,9 @@ if __name__ == '__main__':
     19) (done) Include various gene databases for LineageProfiler in download and allow for custom databases to be used (markerFinder based)
     20) (done) Quantile normalization option for any non-Affy, non-RNASeq data (check box)
     21) (done) Import agilent from Feature extraction files (pull-down option)
-    
+
     22) Update the software from the software
-    
+
     Advantages of this tool kit:
     0) Easiest to use, hands down
     1) Established and novel functionality for transcriptome/proteomics analysis built in
@@ -7914,7 +7912,7 @@ if __name__ == '__main__':
     4) Options for different levels of users with different integration options (multiple statistical method options, option R support)
     5) Built in secondary analysis options for already processed data (graphing, clustering, biomarker discovery, pathway analysis, network visualization)
     6) Incorporates highly validated alternative exon identification methods, independent and jointly
-    
+
     Primary Engineer Work:
     0) C-library calls and/or multithreading where applicable to improve peformance.
     1) MySQL or equivalent transition for all large database queries (e.g., HuEx 2.1 on-the-fly coordinate mapping).
@@ -7922,7 +7920,7 @@ if __name__ == '__main__':
     3) Isoform-domain network visualization and WP overlays.
     4) Webservice calls to in silico protein translation, domain prediction, splicing factor regulation.
     5) Stand-alone integration with bedtools, QC tools, TopHat, Cufflinks, Miso (optional).
-    
+
     ### 2.0.9
     moncole integration
     generic and cell classification machine learning
